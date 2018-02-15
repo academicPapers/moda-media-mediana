@@ -1,0 +1,139 @@
+---
+title: "Avaliação pela Moda, Média ou Mediana?"
+author: 
+- Luiz Fernando Palin Droubi
+- Willian Zonato
+date: "15 de fevereiro de 2018"
+output: 
+  pdf_document: 
+    number_sections: yes
+link-citations: yes
+csl: ABNT_UFPR_2011-Mendeley.csl
+subtitle: Imóvel de Interesse da União
+bibliography: bibliography.bib
+documentclass: article
+classoption: a4paper
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(digits = 10)
+brformat <- function(x, decimal.mark = ",", big.mark = ".", digits = 2, nsmall = 2, scientific = FALSE, ...) {
+  format(x, decimal.mark = decimal.mark, big.mark = big.mark, digits = digits, 
+         nsmall = nsmall, scientific = scientific, ...)
+}
+reais <- function(prefix = "R$", ...) {
+  function(x) paste(prefix, brformat(x, ...), sep = "")
+}
+porcento <- function (x) {
+    if (length(x) == 0) 
+        return(character())
+    x <- plyr::round_any(x, scales:::precision(x)/100)
+    paste0(x * 100, "\\%")
+}
+library(appraiseR)
+```
+
+# Revisão Bibliográfica
+
+Segundo @giannakos...
+
+# Estudo de Caso
+
+## Geração de dados randômicos
+
+```{r dados}
+set.seed(123)
+
+a=-5
+b=2
+
+x=runif(100,0,1)
+y=exp(a*x+b+rnorm(100,0,.2))
+plot(x,y)
+```
+
+
+### Gráfico da variável transformada
+
+```{r}
+plot(x, log(y)) 
+abline(lm(log(y) ~ x), col=2)
+```
+
+## Ajuste da regressão não-linear
+
+```{r nls}
+### NLS Fit
+NLfit <- nls(y ~ exp(a*x+b),  start = c(a=-10, b=15)) 
+```
+
+### Coeficientes
+
+```{r}
+co <- coef(NLfit)
+co
+```
+
+### Gráfico do modelo não-linear
+
+```{r}
+f <- function(x,a,b) {exp(a*x+b)}
+curve(f(x = x, a = co[1], b = co[2]), col = 2, lwd = 1.2) 
+```
+
+### Estimativas do modelo não-linear
+
+```{r}
+predict(NLfit, newdata = data.frame(x = .7))
+```
+
+$$\epsilon = \frac{\hat{Y} - E[Y]}{E[Y]}$$
+
+O valor obtido pelo modelo é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$), que é  `r exp(-5*0.7+2)`. O erro do modelo (E[Y]), portanto, é de `r porcento((predict(NLfit, newdata = data.frame(x = .7)) - exp(-5*0.7+2))/exp(-5*0.7+2))`.
+
+## Ajuste de Regressão Linear com variável dependente transformada
+
+```{r}
+### LM Fit
+fit <- lm(log(y) ~ x)
+s <- summary(fit)
+s
+```
+
+### Gráfico do modelo linear
+
+```{r}
+#plotmod(fit)
+```
+
+
+### Estimativas
+
+a. Pela mediana
+
+```{r mediana}
+Y <- predict(fit, newdata = data.frame(x = .7), interval='prediction')
+exp(Y)
+```
+
+O erro do modelo, neste caso, é de `r porcento((exp(Y[1]) - exp(-5*0.7+2))/exp(-5*0.7+2))`.
+
+b. Pela moda
+
+```{r moda}
+exp(Y - s$sigma)
+```
+
+O erro do modelo, neste caso, é de `r porcento((exp(Y[1] - s$sigma) - exp(-5*0.7+2))/exp(-5*0.7+2))`.
+
+c. Pela média
+
+```{r media}
+exp(Y + s$sigma^2/2)
+```
+
+O erro do modelo, neste caso, é de `r porcento((exp(Y[1] + s$sigma^2/2) - exp(-5*0.7+2))/exp(-5*0.7+2))`.
+
+# Referências {-}
+
