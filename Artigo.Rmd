@@ -7,6 +7,8 @@ date: "15 de fevereiro de 2018"
 output: 
   pdf_document: 
     number_sections: yes
+header-includes:
+  - \usepackage[brazil]{babel}
 link-citations: yes
 csl: ABNT_UFPR_2011-Mendeley.csl
 subtitle: Imóvel de Interesse da União
@@ -16,7 +18,8 @@ classoption: a4paper
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, dev = "png", out.width = "0.7\\linewidth",
+                      fig.path = "images/", fig.align = "center", warning = FALSE)
 options(digits = 10)
 brformat <- function(x, decimal.mark = ",", big.mark = ".", digits = 2, nsmall = 2, scientific = FALSE, ...) {
   format(x, decimal.mark = decimal.mark, big.mark = big.mark, digits = digits, 
@@ -34,67 +37,139 @@ porcento <- function (x) {
 library(appraiseR)
 ```
 
-# Revisão Bibliográfica
+# INTRODUÇÃO
 
-Segundo @giannakos...
+# REVISÃO BIBLIOGRÁFICA
 
-# Estudo de Caso
+## Esperança matemática ou Valor Esperado
+
+Segundo @wiki:E, a "**esperança matemática** de uma variável aleatória é a soma do produto de cada probabilidade de saída da experiência pelo seu respectivo valor. Isto é, representa o valor médio 'esperado' de uma experiência se ela for repetida muitas vezes". Matematicamente, a Esperança de uma variável aleatória $X$ é representada pelo símbolo $E[X]$, de tal forma que, pela definição dada acima, no caso de uma variável aleatória discreta, $E[X] = \sum_{i = 1}^{\infty}x_ip(x_i)$. Já para uma variável aleatória contínua, o valor esperado torna-se $E[X] = \int_{-\infty}^{\infty}xf(x)$.
+
+Segundo @wiki:E, pode-se demonstrar que, no caso geral:
+
+$$E[g(X)] \neq g(E[X])$$
+
+## O problema da retransformação das variáveis
+
+Para efetuar a  retransformação das estimativas de uma regressão logarítmica de volta a sua escala original, precisa-se ter em conta a desigualdade mencionada na seção \ref{esperanca-matematica-ou-valor-esperado}.
+
+Segundo @NBERt0246, quando ajustamos o logaritmo natural de uma variável $Y$ contra outra variável $X$ através da seguinte equação de regressão:
+
+$$ln(Y) = \beta_0 + \beta_1X + \epsilon$$
+A melhor estimativa que se pode fazer da variável dependente $Y$ é o seu Valor Esperado, que neste caso vale:
+
+$$E[Y] = e^{\beta_0 + \beta_1X} \cdot E[e^\epsilon]$$
+Embora o valor esperado dos resíduos seja igual a zero, ele está submetido a uma transformação não linear, de maneira que não podemos afirmar que $E[e^\epsilon] = 1$, como vimos na seção anterior. Desta maneira, o estimador abaixo é enviesado:
+
+$$E[Y] = e^{\beta_0 + \beta_1X}$$
+
+Se o termo de erro $\epsilon$ é normalmente distribuído $N(0,\sigma^2)$, então um estimador não-enviesado para o valor esperado $E[Y]$, de acordo com @Duan, assume a forma vista na equação abaixo:
+
+$$E[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}$$
+
+# ESTUDO DE CASO
 
 ## Geração de dados randômicos
 
 ```{r dados}
 set.seed(123)
 
-a=-5
-b=2
+a = -5
+b = 2
 
-x=runif(100,0,1)
-y=exp(a*x+b+rnorm(100,0,.2))
+x = runif(100,0,1)
+y = exp(a*x+b+rnorm(100,0,.2))
+```
+
+```{r grafico}
 plot(x,y)
 ```
 
 
 ### Gráfico da variável transformada
 
-```{r}
+```{r graficotrans}
 plot(x, log(y)) 
-abline(lm(log(y) ~ x), col=2)
+abline(lm(log(y) ~ x), col = 2)
 ```
 
 ## Ajuste da regressão não-linear
 
 ```{r nls}
 ### NLS Fit
-NLfit <- nls(y ~ exp(a*x+b),  start = c(a=-10, b=15)) 
+NLfit <- nls(y ~ exp(a*x+b), start = c(a = -10, b = 15)) 
 ```
 
 ### Coeficientes
 
-```{r}
+```{r coef}
 co <- coef(NLfit)
 co
 ```
 
 ### Gráfico do modelo não-linear
 
-```{r}
+```{r graficoNL}
 f <- function(x,a,b) {exp(a*x+b)}
 curve(f(x = x, a = co[1], b = co[2]), col = 2, lwd = 1.2) 
+curve(f(x = x, a = -5, b = 2), col = 3, lwd = 1.5, add = TRUE)
 ```
 
 ### Estimativas do modelo não-linear
 
 ```{r}
-predict(NLfit, newdata = data.frame(x = .7))
+pNLfit <- predict(NLfit, newdata = data.frame(x = .7))
+pNLfit
+```
+
+O valor teórico obtido pela equação original ($y = e^{-5x + 2}$) é de:
+
+```{r}
+Vteorico <- exp(-5*.7 + 2)
+round(Vteorico, 4)
 ```
 
 $$\epsilon = \frac{\hat{Y} - E[Y]}{E[Y]}$$
 
-O valor obtido pelo modelo é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$), que é  `r exp(-5*0.7+2)`. O erro do modelo (E[Y]), portanto, é de `r porcento((predict(NLfit, newdata = data.frame(x = .7)) - exp(-5*0.7+2))/exp(-5*0.7+2))`.
+O valor obtido pelo modelo é muito próximo do valor teórico. O erro do modelo, portanto, é de `r porcento((pNLfit - Vteorico)/Vteorico)`.
+
+## Ajuste de modelo linear generalizado
+
+### Poisson
+
+```{r glm}
+Gfit <- glm(y ~ x, family = poisson())
+summary(Gfit)
+```
+
+#### Estimativa com o modelo linear generalizado com Poisson
+
+```{r}
+pGfit <- predict(Gfit, newdata = data.frame(x = .7), type = "response")
+pGfit
+```
+
+O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de `r porcento((pGfit - Vteorico)/Vteorico)`.
+
+### Gauss
+
+```{r glm2}
+Gfit2 <- glm(y ~ x, family = gaussian(link = "log"))
+summary(Gfit2)
+```
+
+#### Estimativa com o modelo linear generalizado com Gauss
+
+```{r}
+pGfit2 <- predict(Gfit2, newdata = data.frame(x = .7), type = "response")
+pGfit2
+```
+
+O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de `r porcento((pGfit2 - Vteorico)/Vteorico)`. Observar que a adoção de ajuste por modelo linear generalizado com família gaussiana e *log-link* é equivalente ao ajustamento de um modelo de regressão não-linear, como visto na seção anterior.
 
 ## Ajuste de Regressão Linear com variável dependente transformada
 
-```{r}
+```{r lm}
 ### LM Fit
 fit <- lm(log(y) ~ x)
 s <- summary(fit)
@@ -103,7 +178,7 @@ s
 
 ### Gráfico do modelo linear
 
-```{r}
+```{r graficoFIT}
 #plotmod(fit)
 ```
 
@@ -113,27 +188,41 @@ s
 a. Pela mediana
 
 ```{r mediana}
-Y <- predict(fit, newdata = data.frame(x = .7), interval='prediction')
-exp(Y)
+Y <- predict(fit, newdata = data.frame(x = .7))
+p_mediana <- exp(Y)
+p_mediana
 ```
 
-O erro do modelo, neste caso, é de `r porcento((exp(Y[1]) - exp(-5*0.7+2))/exp(-5*0.7+2))`.
+O erro do modelo, neste caso, é de `r porcento((p_mediana - Vteorico)/Vteorico)`.
 
 b. Pela moda
 
 ```{r moda}
-exp(Y - s$sigma)
+p_moda <- exp(Y - s$sigma)
+p_moda
 ```
 
-O erro do modelo, neste caso, é de `r porcento((exp(Y[1] - s$sigma) - exp(-5*0.7+2))/exp(-5*0.7+2))`.
+O erro do modelo, neste caso, é de `r porcento((p_moda - Vteorico)/Vteorico)`.
 
 c. Pela média
 
 ```{r media}
-exp(Y + s$sigma^2/2)
+p_media <- exp(Y + s$sigma^2/2)
+p_media
 ```
 
-O erro do modelo, neste caso, é de `r porcento((exp(Y[1] + s$sigma^2/2) - exp(-5*0.7+2))/exp(-5*0.7+2))`.
+O erro do modelo, neste caso, é de `r porcento((p_media - Vteorico)/Vteorico)`.
 
-# Referências {-}
+# CONCLUSÃO
+
+| Modelo                | Previsão      | Erro (%)                                    | 
+|:----------------------|--------------:|--------------------------------------------:|
+| Regressão Não-Linear  | `r pNLfit`    |`r porcento((pNLfit-Vteorico)/Vteorico)`     |
+| GLM (Poisson)         | `r pGfit`     |`r porcento((pGfit-Vteorico)/Vteorico)`      |
+| GLM (Gauss)           | `r pGfit2`    |`r porcento((pGfit2-Vteorico)/Vteorico)`     |
+| LM (Mediana)          | `r p_mediana` |`r porcento((p_mediana-Vteorico)/Vteorico)`  |
+| LM (Moda)             | `r p_moda`    |`r porcento((p_moda-Vteorico)/Vteorico)`     |
+| LM (Média)            | `r p_media`   |`r porcento((p_media-Vteorico)/Vteorico)`    |
+
+# REFERÊNCIAS {-}
 
