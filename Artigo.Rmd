@@ -43,7 +43,13 @@ library(appraiseR)
 
 ## Esperança matemática ou Valor Esperado
 
-Segundo @wiki:E, a "**esperança matemática** de uma variável aleatória é a soma do produto de cada probabilidade de saída da experiência pelo seu respectivo valor. Isto é, representa o valor médio 'esperado' de uma experiência se ela for repetida muitas vezes". Matematicamente, a Esperança de uma variável aleatória $X$ é representada pelo símbolo $E[X]$, de tal forma que, pela definição dada acima, no caso de uma variável aleatória discreta, $E[X] = \sum_{i = 1}^{\infty}x_ip(x_i)$. Já para uma variável aleatória contínua, o valor esperado torna-se $E[X] = \int_{-\infty}^{\infty}xf(x)$.
+Segundo @wiki:E, a "**esperança matemática** de uma variável aleatória é a soma do produto de cada probabilidade de saída da experiência pelo seu respectivo valor. Isto é, representa o valor médio 'esperado' de uma experiência se ela for repetida muitas vezes". Matematicamente, a Esperança de uma variável aleatória $X$ é representada pelo símbolo $E[X]$, de tal forma que, pela definição dada acima, no caso de uma variável aleatória discreta:
+
+$$E[X] = \sum_{i = 1}^{\infty}x_ip(x_i)$$. 
+
+Já para uma variável aleatória contínua, o valor esperado torna-se:
+
+$$E[X] = \int_{-\infty}^{\infty}xf(x)$$
 
 Segundo @wiki:E, pode-se demonstrar que, no caso geral:
 
