@@ -3,7 +3,7 @@ title: "Avaliação pela Moda, Média ou Mediana?"
 author:
 - Luiz Fernando Palin Droubi
 - Willian Zonato
-date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+date: "01/03/2018"
 output:
   html_document:
     fig_caption: yes
@@ -25,26 +25,7 @@ subtitle: Estudo de Caso
 bibliography: bibliography.bib
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, dev = "png", dpi = 600, out.width = "70%", fig.pos = "H",
-                      fig.path = "images/", fig.align = "center", warning = FALSE)
-options(digits = 10)
-brformat <- function(x, decimal.mark = ",", big.mark = ".", digits = 2, nsmall = 2, scientific = FALSE, ...) {
-  format(x, decimal.mark = decimal.mark, big.mark = big.mark, digits = digits, 
-         nsmall = nsmall, scientific = scientific, ...)
-}
-reais <- function(prefix = "R$", ...) {
-  function(x) paste(prefix, brformat(x, ...), sep = "")
-}
-porcento <- function (x) {
-    if (length(x) == 0) 
-        return(character())
-    x <- plyr::round_any(x, scales:::precision(x)/100)
-    paste0(x * 100, "\\%")
-}
-# library(appraiseR)
-library(ggplot2)
-```
+
 
 # INTRODUÇÃO
 
@@ -95,7 +76,8 @@ Para a geração de dados foi utilizada a seguinte expressão teórica, dentro d
 $$y = e^{-5x + 2}$$
 Para obter alguma variabilidade, foram adicionados aos valores teóricos de $y$ erros normais $N(0;0,2)$.
 
-```{r dados}
+
+```r
 set.seed(123)
 
 a = -5
@@ -107,104 +89,226 @@ y = exp(a*x + b + rnorm(100, 0, .2))
 
 * Gráfico dos dados gerados
 
-```{r grafico, fig.cap = "Gráfico dos dados gerados"}
+
+```r
 plot(x,y, pch = 16, cex = 0.5)
 ```
+
+<div class="figure" style="text-align: center">
+<img src="images/grafico-1.png" alt="Gráfico dos dados gerados" width="70%" />
+<p class="caption">Gráfico dos dados gerados</p>
+</div>
 
 
 ### Gráfico da variável transformada
 
-```{r graficotrans, fig.cap = "Gráfico da variável transformada", fig.keep='last'}
+
+```r
 plot(x, log(y), pch = 16, cex = 0.5) 
 abline(lm(log(y) ~ x), col = 2)
 ```
 
+<div class="figure" style="text-align: center">
+<img src="images/graficotrans-1.png" alt="Gráfico da variável transformada" width="70%" />
+<p class="caption">Gráfico da variável transformada</p>
+</div>
+
 ## Ajuste da regressão não-linear
 
-```{r nls}
+
+```r
 ### NLS Fit
 NLfit <- nls(y ~ exp(a*x+b), start = c(a = -10, b = 15)) 
 ```
 
 ### Coeficientes
 
-```{r coef}
+
+```r
 co <- coef(NLfit)
 co
 ```
 
+```
+##            a            b 
+## -4.896555212  1.997874467
+```
+
 ### Gráfico do modelo não-linear
 
-```{r graficoNL, fig.cap = "Gráfico do modelo não-linear"}
+
+```r
 f <- function(x,a,b) {exp(a*x+b)}
 curve(f(x = x, a = co[1], b = co[2]), col = 2, lwd = 1.2) 
 curve(f(x = x, a = -5, b = 2), col = 3, lwd = 1.5, add = TRUE)
 ```
 
+<div class="figure" style="text-align: center">
+<img src="images/graficoNL-1.png" alt="Gráfico do modelo não-linear" width="70%" />
+<p class="caption">Gráfico do modelo não-linear</p>
+</div>
+
 ### Estimativas do modelo não-linear
 
-```{r}
+
+```r
 pNLfit <- predict(NLfit, newdata = data.frame(x = .7))
 pNLfit
 ```
 
+```
+## [1] 0.2393773308
+```
+
 O valor teórico obtido pela equação original ($y = e^{-5x + 2}$) é de:
 
-```{r}
+
+```r
 Yteorico <- exp(-5*.7 + 2)
 round(Yteorico, 4)
 ```
 
+```
+## [1] 0.2231
+```
+
 $$\epsilon = \frac{\hat{Y} - Y_{teórico}}{Y_{teórico}}$$
 
-O valor obtido pelo modelo é muito próximo do valor teórico. O erro do modelo, portanto, é de `r porcento((pNLfit - Yteorico)/Yteorico)`.
+O valor obtido pelo modelo é muito próximo do valor teórico. O erro do modelo, portanto, é de 7.28\%.
 
 ## Ajuste de modelo linear generalizado
 
 ### Poisson
 
-```{r glm}
+
+```r
 Gfit <- glm(y ~ x, family = poisson())
 summary(Gfit)
 ```
 
+```
+## 
+## Call:
+## glm(formula = y ~ x, family = poisson())
+## 
+## Deviance Residuals: 
+##         Min           1Q       Median           3Q          Max  
+## -0.78105080  -0.11407910  -0.02334406   0.04517457   0.78120241  
+## 
+## Coefficients:
+##               Estimate Std. Error   z value   Pr(>|z|)    
+## (Intercept)  2.0129853  0.1265714  15.90394 < 2.22e-16 ***
+## x           -4.9957447  0.4647721 -10.74881 < 2.22e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 184.288851  on 99  degrees of freedom
+## Residual deviance:   4.991623  on 98  degrees of freedom
+## AIC: Inf
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
 #### Estimativa com o modelo linear generalizado com Poisson
 
-```{r}
+
+```r
 pGfit <- predict(Gfit, newdata = data.frame(x = .7), type = "response")
 pGfit
 ```
 
-O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de `r porcento((pGfit - Yteorico)/Yteorico)`.
+```
+##            1 
+## 0.2267207901
+```
+
+O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de 1.61\%.
 
 ### Gauss
 
-```{r glm2}
+
+```r
 Gfit2 <- glm(y ~ x, family = gaussian(link = "log"))
 summary(Gfit2)
 ```
 
+```
+## 
+## Call:
+## glm(formula = y ~ x, family = gaussian(link = "log"))
+## 
+## Deviance Residuals: 
+##         Min           1Q       Median           3Q          Max  
+## -1.52566206  -0.10270628  -0.01630332   0.02118162   2.06949483  
+## 
+## Coefficients:
+##               Estimate Std. Error   t value   Pr(>|t|)    
+## (Intercept)  1.9978743  0.0268358  74.44810 < 2.22e-16 ***
+## x           -4.8965539  0.1736556 -28.19692 < 2.22e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 0.1633725569)
+## 
+##     Null deviance: 313.906827  on 99  degrees of freedom
+## Residual deviance:  16.010526  on 98  degrees of freedom
+## AIC: 106.59533
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
 #### Estimativa com o modelo linear generalizado com Gauss
 
-```{r}
+
+```r
 pGfit2 <- predict(Gfit2, newdata = data.frame(x = .7), type = "response")
 pGfit2
 ```
 
-O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de `r porcento((pGfit2 - Yteorico)/Yteorico)`. Observar que a adoção de ajuste por modelo linear generalizado com família gaussiana e *log-link* é equivalente ao ajustamento de um modelo de regressão não-linear, como visto na seção anterior.
+```
+##            1 
+## 0.2393775107
+```
+
+O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de 7.28\%. Observar que a adoção de ajuste por modelo linear generalizado com família gaussiana e *log-link* é equivalente ao ajustamento de um modelo de regressão não-linear, como visto na seção anterior.
 
 ## Ajuste de Regressão Linear com variável dependente transformada
 
-```{r lm}
+
+```r
 ### LM Fit
 fit <- lm(log(y) ~ x)
 s <- summary(fit)
 s
 ```
 
+```
+## 
+## Call:
+## lm(formula = log(y) ~ x)
+## 
+## Residuals:
+##         Min          1Q      Median          3Q         Max 
+## -0.44759471 -0.12264594 -0.00394687  0.11926677  0.44344532 
+## 
+## Coefficients:
+##                Estimate  Std. Error   t value   Pr(>|t|)    
+## (Intercept)  1.99820803  0.03921100  50.96040 < 2.22e-16 ***
+## x           -5.01796627  0.06836424 -73.40045 < 2.22e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1938582 on 98 degrees of freedom
+## Multiple R-squared:  0.9821351,	Adjusted R-squared:  0.9819528 
+## F-statistic: 5387.626 on 1 and 98 DF,  p-value: < 2.2204e-16
+```
+
 ### Gráfico do modelo linear
 
-```{r graficoFIT, fig.cap = "Gráfico do modelo linear"}
+
+```r
 #plotmod(fit)
 ```
 
@@ -213,43 +317,61 @@ s
 
 a. Pela mediana
 
-```{r mediana}
+
+```r
 Y <- predict(fit, newdata = data.frame(x = .7))
 p_mediana <- exp(Y)
 p_mediana
 ```
 
-O erro do modelo, neste caso, é de `r porcento((p_mediana - Yteorico)/Yteorico)`.
+```
+##            1 
+## 0.2199470683
+```
+
+O erro do modelo, neste caso, é de -1.43\%.
 
 b. Pela moda
 
-```{r moda}
+
+```r
 p_moda <- exp(Y - s$sigma^2)
 p_moda
 ```
 
-O erro do modelo, neste caso, é de `r porcento((p_moda - Yteorico)/Yteorico)`.
+```
+##            1 
+## 0.2118346261
+```
+
+O erro do modelo, neste caso, é de -5.06\%.
 
 c. Pela média
 
-```{r media}
+
+```r
 p_media <- exp(Y + s$sigma^2/2)
 p_media
 ```
 
-O erro do modelo, neste caso, é de `r porcento((p_media - Yteorico)/Yteorico)`.
+```
+##            1 
+## 0.2241190594
+```
+
+O erro do modelo, neste caso, é de 0.443\%.
 
 ## Comparação dos resultados obtidos
 
 | Modelo                | Previsão                    | Erro (%)                                    | 
 |:----------------------|----------------------------:|--------------------------------------------:|
-| **Valor Teórico**     | **`r round(Yteorico, 4)`**  | ------                                      |
-| Regressão Não-Linear  | `r round(pNLfit, 4)`        |`r porcento((pNLfit-Yteorico)/Yteorico)`     |
-| GLM (Poisson)         | `r round(pGfit, 4)`         |`r porcento((pGfit-Yteorico)/Yteorico)`      |
-| GLM (Gauss)           | `r round(pGfit2, 4)`        |`r porcento((pGfit2-Yteorico)/Yteorico)`     |
-| LM (Mediana)          | `r round(p_mediana, 4)`     |`r porcento((p_mediana-Yteorico)/Yteorico)`  |
-| LM (Moda)             | `r round(p_moda, 4)`        |`r porcento((p_moda-Yteorico)/Yteorico)`     |
-| LM (Média)            | `r round(p_media, 4)`       |`r porcento((p_media-Yteorico)/Yteorico)`    |
+| **Valor Teórico**     | **0.2231**  | ------                                      |
+| Regressão Não-Linear  | 0.2394        |7.28\%     |
+| GLM (Poisson)         | 0.2267         |1.61\%      |
+| GLM (Gauss)           | 0.2394        |7.28\%     |
+| LM (Mediana)          | 0.2199     |-1.43\%  |
+| LM (Moda)             | 0.2118        |-5.06\%     |
+| LM (Média)            | 0.2241       |0.443\%    |
 
 # Método de Monte-Carlo
 
@@ -257,7 +379,8 @@ O resultados acima não devem ser interpretados como taxativos, pois os valores 
 
 Para uma comparação mais precisa entre os modelos testados, utilizamos o método de Monte Carlo, simulando os dados randomicamente a cada iteração. Finalmente, comparamos o valor médio obtido por cada cada modelo ao valor téorico.
 
-```{r, cache = TRUE}
+
+```r
 Nsim <- 500
 pNL <- vector(mode = "numeric", length = Nsim)
 pG <- vector(mode = "numeric", length = Nsim)
@@ -283,69 +406,20 @@ for (i in 1:Nsim) {
 
 * Gráficos
 
-```{r histogramas, out.width="100%", echo = FALSE, message=FALSE, fig.cap = "Histogramas das variáveis simuladas"}
-data <- data.frame(pNL, pG, pG2, p_mediana, p_moda, p_media)
-p <- list()
-p[[1]] <- ggplot(data, aes(x = pNL), breaks = 10) + 
-  geom_histogram(aes(y = ..density..)) + 
-  stat_density(geom = "line", aes(colour = "Kernel")) +
-  stat_function(fun = dnorm,
-                args = list(mean = mean(data$pNL), sd = sd(data$pNL)), 
-                aes(colour = "Normal")) + 
-  theme(legend.position = "bottom", legend.title = element_blank(),
-        legend.text = element_text(size = 8))
-p[[2]] <- ggplot(data, aes(x = pG), breaks = 10) + 
-  geom_histogram(aes(y = ..density..)) + 
-  stat_density(geom = "line", aes(colour = "Kernel")) +
-  stat_function(fun = dnorm, 
-                args = list(mean = mean(data$pG), sd = sd(data$pG)), 
-                aes(colour = "Normal")) + 
-  theme(legend.position = "bottom", legend.title = element_blank(),
-        legend.text = element_text(size = 8))
-p[[3]] <- ggplot(data, aes(x = pG2), breaks = 10) + 
-  geom_histogram(aes(y = ..density..)) + 
-  stat_density(geom = "line", aes(colour = "Kernel")) +
-  stat_function(fun = dnorm, 
-                args = list(mean = mean(data$pG2), sd = sd(data$pG2)), 
-                aes(colour = "Normal")) + 
-  theme(legend.position = "bottom", legend.title = element_blank(),
-        legend.text = element_text(size = 8))
-p[[4]] <- ggplot(data, aes(x = p_mediana), breaks = 10) + 
-  geom_histogram(aes(y = ..density..)) + 
-  stat_density(geom = "line", aes(colour = "Kernel")) +
-  stat_function(fun = dnorm, 
-                args = list(mean = mean(data$p_mediana), sd = sd(data$p_mediana)), 
-                aes(colour = "Normal")) + 
-  theme(legend.position = "bottom", legend.title = element_blank(),
-        legend.text = element_text(size = 8))
-p[[5]] <- ggplot(data, aes(x = p_moda), breaks = 10) + 
-  geom_histogram(aes(y = ..density..)) + 
-  stat_density(geom = "line", aes(colour = "Kernel")) +
-  stat_function(fun = dnorm, 
-                args = list(mean = mean(data$p_moda), sd = sd(data$p_moda)), 
-                aes(colour = "Normal")) + 
-  theme(legend.position = "bottom", legend.title = element_blank(),
-        legend.text = element_text(size = 8))
-p[[6]] <- ggplot(data, aes(x = p_media), breaks = 10) + 
-  geom_histogram(aes(y = ..density..)) + 
-  stat_density(geom = "line", aes(colour = "Kernel")) +
-  stat_function(fun = dnorm, 
-                args = list(mean = mean(data$p_media), sd = sd(data$p_media)), 
-                aes(colour = "Normal")) + 
-  theme(legend.position = "bottom", legend.title = element_blank(),
-        legend.text = element_text(size = 8))
-cowplot::plot_grid(plotlist = p, ncol = 3)
-```
+<div class="figure" style="text-align: center">
+<img src="images/histogramas-1.png" alt="Histogramas das variáveis simuladas" width="100%" />
+<p class="caption">Histogramas das variáveis simuladas</p>
+</div>
 
 
 | Modelo                |Previsão                     |$\sigma^2$                  |Erro                   |     
 |:----------------------|----------------------------:|---------------------------:|----------------------:|   
-| **Valor Teórico**     |**`r round(Yteorico, 4)`**   |------                      |------                 |   
-| Regressão Não-Linear  |`r round(mean(pNL), 4)`      |`r round(sd(pNL), 4)`       |`r porcento((mean(pNL)-Yteorico)/Yteorico)`       |  
-| GLM (Poisson)         |`r round(mean(pG), 4)`       |`r round(sd(pG), 4)`        |`r porcento((mean(pG)-Yteorico)/Yteorico)`        |  
-| GLM (Gauss)           |`r round(mean(pG2), 4)`      |`r round(sd(pG2), 4)`       |`r porcento((mean(pG2)-Yteorico)/Yteorico)`       |  
-| LM (Mediana)          |`r round(mean(p_mediana), 4)`|`r round(sd(p_mediana), 4)` |`r porcento((mean(p_mediana)-Yteorico)/Yteorico)` |  
-| LM (Moda)             |`r round(mean(p_moda), 4)`   |`r round(sd(p_moda), 4)`    |`r porcento((mean(p_moda)-Yteorico)/Yteorico)`    |  
-| LM (Média)            |`r round(mean(p_media), 4)`  |`r round(sd(p_media), 4)`   |`r porcento((mean(p_media)-Yteorico)/Yteorico)`   |    
+| **Valor Teórico**     |**0.2231**   |------                      |------                 |   
+| Regressão Não-Linear  |0.2275      |0.0389       |1.96\%       |  
+| GLM (Poisson)         |0.2279       |0.0111        |2.16\%        |  
+| GLM (Gauss)           |0.2275      |0.0389       |1.96\%       |  
+| LM (Mediana)          |0.2236|0.0052 |0.207\% |  
+| LM (Moda)             |0.2148   |0.0052    |-3.72\%    |  
+| LM (Média)            |0.2281  |0.0053   |2.23\%   |    
 
 # REFERÊNCIAS {-}
