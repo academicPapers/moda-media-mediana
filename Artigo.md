@@ -3,7 +3,7 @@ title: "Avaliação pela Moda, Média ou Mediana?"
 author:
 - Luiz Fernando Palin Droubi
 - Willian Zonato
-date: "01/03/2018"
+date: "13/04/2018"
 output:
   html_document:
     fig_caption: yes
@@ -41,11 +41,12 @@ Já para uma variável aleatória contínua, o valor esperado torna-se:
 
 $$E[X] = \int_{-\infty}^{\infty}xf(x)dx$$
 
-Segundo @wiki:E, pode-se demonstrar que, no caso geral:
-
-$$E[g(X)] \neq g(E[X])$$
 
 ## O problema da retransformação das variáveis
+
+De acordo com Duan [-@Duan, 606], o Valor Esperado $E$ de uma variável resposta $Y$ que tenha sido transformada em valores $\eta$ durante a regressão linear por uma função $g(Y)$ **não-linear** não é igual ao valor da simples retransformação da variável transforma pela sua função inversa $h(\eta) = g^{-1}(Y)$. Em outros termos[@Duan, 606]:
+
+$$E[Y_0] = E[h(x_0\beta + \epsilon)] \ne h(x_o\beta)$$
 
 Numa regressão linear logaritmizada, ou seja, uma regressão linear com o logarítmo da variável dependente, para efetuar apropriadamente a retransformação das estimativas de volta a sua escala original, precisa-se ter em conta a desigualdade mencionada na seção \ref{esperanca-matematica-ou-valor-esperado}.
 
@@ -57,7 +58,7 @@ Sabe-se que a melhor estimativa que se pode fazer da variável dependente $Y$ é
 
 $$E[Y] = e^{\beta_0 + \beta_1X} \cdot E[e^\epsilon]$$
 
-Embora o valor esperado dos resíduos seja igual a zero, ele está submetido a uma transformação não linear, de maneira que não podemos afirmar que $E[e^\epsilon] = 1$, como vimos na seção anterior. Desta maneira, o estimador abaixo é enviesado:
+Embora o valor esperado dos resíduos $\epsilon$ seja igual a zero, ele está submetido a uma transformação não linear, de maneira que não podemos afirmar que $E[e^\epsilon] = 1$, como vimos na seção anterior. Desta maneira, o estimador abaixo é enviesado:
 
 $$E[Y] = e^{\beta_0 + \beta_1X}$$
 
