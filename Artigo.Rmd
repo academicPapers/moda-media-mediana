@@ -5,12 +5,12 @@ author:
 - Willian Zonato
 date: "`r format(Sys.Date(), '%d/%m/%Y')`"
 output:
-  pdf_document:
-    keep_tex: yes
-    number_sections: yes
   html_document:
     fig_caption: yes
     keep_md: yes
+  pdf_document:
+    keep_tex: yes
+    number_sections: yes
 classoption: a4paper
 header-includes:
 - \usepackage[brazil]{babel}
@@ -23,6 +23,8 @@ link-citations: yes
 csl: ABNT_UFPR_2011-Mendeley.csl
 subtitle: Estudo de Caso
 bibliography: bibliography.bib
+params:
+  Nsim: 500
 ---
 
 ```{r setup, include=FALSE}
@@ -63,27 +65,36 @@ $$E[X] = \int_{-\infty}^{\infty}xf(x)dx$$
 
 ## O problema da retransformação das variáveis
 
+### Regressão Linear
+
 De acordo com Duan [-@Duan, 606], o Valor Esperado $E$ de uma variável resposta $Y$ que tenha sido transformada em valores $\eta$ durante a regressão linear por uma função $g(Y)$ **não-linear** não é igual ao valor da simples retransformação da variável transforma pela sua função inversa $h(\eta) = g^{-1}(Y)$. Em outros termos[@Duan, 606]:
 
 $$E[Y_0] = E[h(x_0\beta + \epsilon)] \ne h(x_o\beta)$$
 
-Numa regressão linear logaritmizada, ou seja, uma regressão linear com o logarítmo da variável dependente, para efetuar apropriadamente a retransformação das estimativas de volta a sua escala original, precisa-se ter em conta a desigualdade mencionada na seção \ref{esperanca-matematica-ou-valor-esperado}.
+Numa regressão linear logaritmizada, ou seja, uma regressão linear com o logarítmo da variável dependente ($h(\eta) = g^{-1}(\eta) = exp(\eta)$), para efetuar apropriadamente a retransformação das estimativas de volta a sua escala original, precisa-se ter em conta a desigualdade mencionada na seção \ref{esperanca-matematica-ou-valor-esperado}.
 
-Segundo @NBERt0246, quando ajustamos o logaritmo natural de uma variável $Y$ contra outra variável $X$ através da seguinte equação de regressão:
+Segundo [@NBERt0246], quando ajustamos o logaritmo natural de uma variável $Y$ contra outra variável $X$ através da seguinte equação de regressão:
 
 $$ln(Y) = \beta_0 + \beta_1X + \epsilon$$
 
-Sabe-se que a melhor estimativa que se pode fazer da variável dependente $Y$ é o seu Valor Esperado, que neste caso vale:
+De acordo com [@NBERt0246, 6; @Duan, 606], se o erro $\epsilon$ é normalmete distribuído, com média zero e desvio padrão $\sigma^2$, ou seja, se $\epsilon \sim N(0, \sigma^2)$, então:
 
-$$E[Y] = e^{\beta_0 + \beta_1X} \cdot E[e^\epsilon]$$
+$$E[Y|X] = e^{\beta_0 + \beta_1X} \cdot E[e^\epsilon] \ne e^{\beta_0 + \beta_1X}$$
 
 Embora o valor esperado dos resíduos $\epsilon$ seja igual a zero, ele está submetido a uma transformação não linear, de maneira que não podemos afirmar que $E[e^\epsilon] = 1$, como vimos na seção anterior. Desta maneira, o estimador abaixo é enviesado:
 
-$$E[Y] = e^{\beta_0 + \beta_1X}$$
+$$E[Y|X] = e^{\beta_0 + \beta_1X}$$
 
-Se o termo de erro $\epsilon$ é normalmente distribuído $N(0,\sigma^2)$, então um estimador não-enviesado para o valor esperado $E[Y]$, de acordo com @Duan, assume a forma vista na equação abaixo @Duan[apud @NBERt0246, p.2 e 6]:
+Porém se o termo de erro $\epsilon$ é normalmente distribuído $N(0,\sigma^2)$, então um estimador não-enviesado para o valor esperado $E[Y]$, de acordo com @Duan, assume a forma vista na equação abaixo[@Duan, 606; @NBERt0246, 2 e 6]:
 
 $$E[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}$$
+
+### Modelo linear generalizado (*GLM*)
+
+De acordo com [@NBERt0246, 3-4], um modelo linear generalizado com uma função de ligação logarítimica estimam $log(E[Y|X])$ diretamente, de tal maneira que:
+
+$$log(E[y|X]) = x\beta$$ ou
+$$E[Y|X] = e^{x\beta}$$
 
 # ESTUDO DE CASO
 
@@ -98,12 +109,13 @@ Para obter alguma variabilidade, foram adicionados aos valores teóricos de $y$ 
 
 ```{r dados}
 set.seed(123)
+Nsim <- params$Nsim
 
 a = -5
 b = 2
 
-x = runif(100, 0, 1)
-y = exp(a*x + b + rnorm(100, 0, .2))
+x = runif(Nsim, 0, 1)
+y = exp(a*x + b + rnorm(Nsim, 0, .2))
 ```
 
 * Gráfico dos dados gerados
@@ -203,6 +215,24 @@ s <- summary(fit)
 s
 ```
 
+### Verificação da normalidade
+
+```{r}
+shapiro.test(fit$residuals)
+```
+```{r}
+res <- data.frame(fit$residuals)
+ggplot(res, aes(x = fit.residuals)) +
+  geom_histogram(aes(y = ..density..), bins = 8) +
+  stat_density(geom = "line", aes(colour = "Kernel")) +
+  stat_function(fun = dnorm,
+                args = list(mean = mean(fit$residuals), sd = sd(fit$residuals)), 
+                aes(colour = "Normal")) + 
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        legend.text = element_text(size = 8))
+```
+
+
 ### Gráfico do modelo linear
 
 ```{r graficoFIT, fig.cap = "Gráfico do modelo linear"}
@@ -254,84 +284,105 @@ O erro do modelo, neste caso, é de `r porcento((p_media - Yteorico)/Yteorico)`.
 
 # Método de Monte-Carlo
 
-O resultados acima não devem ser interpretados como taxativos, pois os valores encontrados foram obtidos de dados gerados randômicamente.
+O resultados acima não devem ser interpretados como taxativos, pois os valores encontrados foram obtidos de dados gerados randomicamente e em único ponto.
 
-Para uma comparação mais precisa entre os modelos testados, utilizamos o método de Monte Carlo, simulando os dados randomicamente a cada iteração. Finalmente, comparamos o valor médio obtido por cada cada modelo ao valor téorico.
+Para uma comparação mais precisa entre os modelos testados, utilizamos o método de Monte Carlo em conjunto com a técnica de validação cruzada, simulando os modelos em apenas parte dos dados (*training set*) e fazendo previsões dos dados na outra particação (*test set*).
 
-```{r, cache = TRUE}
-Nsim <- 500
-pNL <- vector(mode = "numeric", length = Nsim)
-pG <- vector(mode = "numeric", length = Nsim)
-pG2 <- vector(mode = "numeric", length = Nsim)
-p_mediana <- vector(mode = "numeric", length = Nsim)
-p_moda <- vector(mode = "numeric", length = Nsim)
-p_media <- vector(mode = "numeric", length = Nsim)
-for (i in 1:Nsim) {
-  y = exp(a*x + b + rnorm(100, 0, .2))
-  NLfit <- nls(y ~ exp(a*x+b), start = c(a = -10, b = 15)) 
-  Gfit <- glm(y ~ x, family = poisson())
-  Gfit2 <- glm(y ~ x, family = gaussian(link = "log"))
-  fit <- lm(log(y) ~ x)
-  s <- summary(fit)
-  pNL[i] <- predict(NLfit, newdata = data.frame(x = .7))
-  pG[i] <- predict(Gfit, newdata = data.frame(x = .7), type = "response")
-  pG2[i] <- predict(Gfit2, newdata = data.frame(x = .7), type = "response")
-  p_mediana[i] <- exp(predict(fit, newdata = data.frame(x = .7)))
-  p_moda[i] <- exp(predict(fit, newdata = data.frame(x = .7)) - s$sigma^2)
-  p_media[i] <- exp(predict(fit, newdata = data.frame(x = .7)) + s$sigma^2/2)
-}
+Para este caso, vamos dividir randomicamente os dados em duas partições iguais, ou seja, os modelos serão gerados em cima de metade dos dados (*training set*) e as predições serão efetuadas e comparadas aos 50% de dados restantes (*test set*).
+
+## Dados
+
+```{r}
+library(readxl)
+df <- read_excel("amostra.xlsx")
 ```
 
-* Gráficos
+## Simulações
+
+```{r, cache = TRUE}
+pNL <- list()
+pG <- list()
+pG2 <- list()
+p_mediana <- list()
+p_moda <- list()
+p_media <- list()
+ASPE_pNL <- vector(mode = "numeric", length = Nsim/2)
+ASPE_pG <- vector(mode = "numeric", length = Nsim/2)
+ASPE_pG2 <- vector(mode = "numeric", length = Nsim/2)
+ASPE_mediana <- vector(mode = "numeric", length = Nsim/2)
+ASPE_moda <- vector(mode = "numeric", length = Nsim/2)
+ASPE_media <- vector(mode = "numeric", length = Nsim/2)
+for (i in seq_len(Nsim)) {
+  subset <- sample(Nsim, Nsim/2, replace = FALSE)
+  trainingset <- df[subset, ]  
+  testset <-  df[-subset, ]
+  NLfit <- nls(Y ~ exp(a*X + b), data = trainingset, start = c(a = -10, b = 15)) 
+  Gfit <- glm(Y ~ X, family = poisson(), data = trainingset)
+  Gfit2 <- glm(Y ~ X, family = gaussian(link = "log"), data = trainingset)
+  fit <- lm(log(Y) ~ X, data = trainingset)06
+  ASPE_pG2[i] <- sum((pG2[[i]] - testset)^2)
+  ASPE_mediana[i] <- sum((p_mediana[[i]] - testset)^2)
+  ASPE_moda[i] <- sum((p_moda[[i]] - testset)^2)
+  ASPE_media[i] <- sum((p_media[[i]] - testset)^2)
+}
+mean(ASPE_pNL)
+mean(ASPE_pG)
+mean(ASPE_pG2)
+mean(ASPE_mediana)
+mean(ASPE_moda)
+mean(ASPE_media)
+```
+
+## Gráficos
 
 ```{r histogramas, out.width="100%", echo = FALSE, message=FALSE, fig.cap = "Histogramas das variáveis simuladas"}
-data <- data.frame(pNL, pG, pG2, p_mediana, p_moda, p_media)
+data <- data.frame(ASPE_pNL, ASPE_pG, ASPE_pG2, ASPE_mediana, ASPE_moda, ASPE_media)
 p <- list()
-p[[1]] <- ggplot(data, aes(x = pNL), breaks = 10) + 
+p[[1]] <- ggplot(data, aes(x = ASPE_pNL), breaks = 10) + 
   geom_histogram(aes(y = ..density..)) + 
   stat_density(geom = "line", aes(colour = "Kernel")) +
   stat_function(fun = dnorm,
-                args = list(mean = mean(data$pNL), sd = sd(data$pNL)), 
+                args = list(mean = mean(data$ASPE_pNL), sd = sd(data$ASPE_pNL)), 
                 aes(colour = "Normal")) + 
   theme(legend.position = "bottom", legend.title = element_blank(),
         legend.text = element_text(size = 8))
-p[[2]] <- ggplot(data, aes(x = pG), breaks = 10) + 
+p[[2]] <- ggplot(data, aes(x = ASPE_pG), breaks = 10) + 
   geom_histogram(aes(y = ..density..)) + 
   stat_density(geom = "line", aes(colour = "Kernel")) +
   stat_function(fun = dnorm, 
-                args = list(mean = mean(data$pG), sd = sd(data$pG)), 
+                args = list(mean = mean(data$ASPE_pG), sd = sd(data$ASPE_pG)), 
                 aes(colour = "Normal")) + 
   theme(legend.position = "bottom", legend.title = element_blank(),
         legend.text = element_text(size = 8))
-p[[3]] <- ggplot(data, aes(x = pG2), breaks = 10) + 
+p[[3]] <- ggplot(data, aes(x = ASPE_pG2), breaks = 10) + 
   geom_histogram(aes(y = ..density..)) + 
   stat_density(geom = "line", aes(colour = "Kernel")) +
   stat_function(fun = dnorm, 
-                args = list(mean = mean(data$pG2), sd = sd(data$pG2)), 
+                args = list(mean = mean(data$ASPE_pG2), sd = sd(data$ASPE_pG2)), 
                 aes(colour = "Normal")) + 
   theme(legend.position = "bottom", legend.title = element_blank(),
         legend.text = element_text(size = 8))
-p[[4]] <- ggplot(data, aes(x = p_mediana), breaks = 10) + 
+p[[4]] <- ggplot(data, aes(x = ASPE_mediana), breaks = 10) + 
   geom_histogram(aes(y = ..density..)) + 
   stat_density(geom = "line", aes(colour = "Kernel")) +
   stat_function(fun = dnorm, 
-                args = list(mean = mean(data$p_mediana), sd = sd(data$p_mediana)), 
+                args = list(mean = mean(data$ASPE_mediana), sd = sd(data$ASPE_mediana)), 
                 aes(colour = "Normal")) + 
   theme(legend.position = "bottom", legend.title = element_blank(),
         legend.text = element_text(size = 8))
-p[[5]] <- ggplot(data, aes(x = p_moda), breaks = 10) + 
+p[[5]] <- ggplot(data, aes(x = ASPE_moda), breaks = 10) + 
   geom_histogram(aes(y = ..density..)) + 
   stat_density(geom = "line", aes(colour = "Kernel")) +
   stat_function(fun = dnorm, 
-                args = list(mean = mean(data$p_moda), sd = sd(data$p_moda)), 
+                args = list(mean = mean(data$ASPE_moda), sd = sd(data$ASPE_moda)), 
                 aes(colour = "Normal")) + 
   theme(legend.position = "bottom", legend.title = element_blank(),
         legend.text = element_text(size = 8))
-p[[6]] <- ggplot(data, aes(x = p_media), breaks = 10) + 
+p[[6]] <- ggplot(data, aes(x = ASPE_media), breaks = 10) + 
   geom_histogram(aes(y = ..density..)) + 
   stat_density(geom = "line", aes(colour = "Kernel")) +
   stat_function(fun = dnorm, 
-                args = list(mean = mean(data$p_media), sd = sd(data$p_media)), 
+                args = list(mean = mean(data$ASPE_media), sd = sd(data$ASPE_media)), 
                 aes(colour = "Normal")) + 
   theme(legend.position = "bottom", legend.title = element_blank(),
         legend.text = element_text(size = 8))
@@ -339,14 +390,6 @@ cowplot::plot_grid(plotlist = p, ncol = 3)
 ```
 
 
-| Modelo                |Previsão                     |$\sigma^2$                  |Erro                   |     
-|:----------------------|----------------------------:|---------------------------:|----------------------:|   
-| **Valor Teórico**     |**`r round(Yteorico, 4)`**   |------                      |------                 |   
-| Regressão Não-Linear  |`r round(mean(pNL), 4)`      |`r round(sd(pNL), 4)`       |`r porcento((mean(pNL)-Yteorico)/Yteorico)`       |  
-| GLM (Poisson)         |`r round(mean(pG), 4)`       |`r round(sd(pG), 4)`        |`r porcento((mean(pG)-Yteorico)/Yteorico)`        |  
-| GLM (Gauss)           |`r round(mean(pG2), 4)`      |`r round(sd(pG2), 4)`       |`r porcento((mean(pG2)-Yteorico)/Yteorico)`       |  
-| LM (Mediana)          |`r round(mean(p_mediana), 4)`|`r round(sd(p_mediana), 4)` |`r porcento((mean(p_mediana)-Yteorico)/Yteorico)` |  
-| LM (Moda)             |`r round(mean(p_moda), 4)`   |`r round(sd(p_moda), 4)`    |`r porcento((mean(p_moda)-Yteorico)/Yteorico)`    |  
-| LM (Média)            |`r round(mean(p_media), 4)`  |`r round(sd(p_media), 4)`   |`r porcento((mean(p_media)-Yteorico)/Yteorico)`   |    
+
 
 # REFERÊNCIAS {-}
