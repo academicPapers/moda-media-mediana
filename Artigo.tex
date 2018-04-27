@@ -29,7 +29,6 @@
             pdfborder={0 0 0},
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
-\usepackage{longtable,booktabs}
 \usepackage{graphicx,grffile}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -461,66 +460,90 @@ generalizado) sobre os dados disponíveis em Hochheim
 
 \subsubsection{Regressão linear}\label{regressao-linear-2}
 
+Para o cálculo do RMSPE foi utilizado como referência o modelo proposto
+por Hochheim (\protect\hyperlink{ref-hochheim}{2015}, p. 29), ou seja,
+foram utilizadas as mesmas transformações de variáveis utilizadas no
+modelo proposto. Os valores dos \(\beta_i\) são calculados a cada passo.
+
 Os valores ajustados com os estimadores da moda, média e mediana podem
 ser vistos na tabela abaixo:
 
-\begin{longtable}[]{@{}lrrrr@{}}
+\rowcolors{2}{gray!6}{white}
+
+\begin{table}
+
+\caption{\label{tab:unnamed-chunk-5}Valores ajustados para os dados pelos estimadores}
+\centering
+\begin{tabular}[t]{lrrrr}
+\hiderowcolors
 \toprule
-& Y & Média & Mediana & Moda\tabularnewline
+  & Y & Média & Mediana & Moda\\
 \midrule
-\endhead
-AP\_1 & 1.060.000 & 1.029.765 & 1.020.713 & 1.002.846\tabularnewline
-AP\_2 & 510.000 & 628.132 & 622.610 & 611.712\tabularnewline
-AP\_3 & 780.000 & 855.052 & 847.535 & 832.700\tabularnewline
-AP\_4 & 550.000 & 736.956 & 730.478 & 717.691\tabularnewline
-AP\_5 & 850.000 & 1.011.300 & 1.002.410 & 984.863\tabularnewline
-AP\_6 & 300.000 & 358.594 & 355.441 & 349.220\tabularnewline
-AP\_7 & 750.000 & 724.106 & 717.741 & 705.177\tabularnewline
-AP\_8 & 650.000 & 657.475 & 651.695 & 640.288\tabularnewline
-AP\_9 & 620.000 & 658.389 & 652.601 & 641.177\tabularnewline
-AP\_10 & 740.000 & 662.002 & 656.182 & 644.696\tabularnewline
-AP\_11 & 770.000 & 818.933 & 811.734 & 797.525\tabularnewline
-AP\_12 & 680.000 & 702.573 & 696.397 & 684.207\tabularnewline
-AP\_13 & 850.000 & 681.544 & 675.553 & 663.728\tabularnewline
-AP\_14 & 420.000 & 551.781 & 546.931 & 537.357\tabularnewline
-AP\_15 & 547.000 & 673.810 & 667.887 & 656.196\tabularnewline
-AP\_16 & 1.600.000 & 1.413.047 & 1.400.625 & 1.376.108\tabularnewline
-AP\_17 & 1.320.000 & 1.115.664 & 1.105.857 & 1.086.499\tabularnewline
-AP\_18 & 615.000 & 645.338 & 639.665 & 628.468\tabularnewline
-AP\_19 & 705.000 & 722.736 & 716.383 & 703.843\tabularnewline
-AP\_20 & 418.000 & 435.824 & 431.993 & 424.431\tabularnewline
-AP\_21 & 270.000 & 243.440 & 241.300 & 237.077\tabularnewline
-AP\_22 & 418.000 & 485.426 & 481.159 & 472.736\tabularnewline
-AP\_23 & 650.000 & 630.016 & 624.478 & 613.547\tabularnewline
-AP\_24 & 700.000 & 774.614 & 767.805 & 754.365\tabularnewline
-AP\_25 & 680.000 & 729.864 & 723.448 & 710.784\tabularnewline
-AP\_26 & 420.000 & 350.336 & 347.256 & 341.178\tabularnewline
-AP\_27 & 195.000 & 229.411 & 227.394 & 223.414\tabularnewline
-AP\_28 & 290.000 & 279.686 & 277.228 & 272.375\tabularnewline
-AP\_29 & 272.000 & 246.194 & 244.030 & 239.758\tabularnewline
-AP\_30 & 430.000 & 399.634 & 396.121 & 389.187\tabularnewline
-AP\_31 & 895.000 & 615.032 & 609.625 & 598.954\tabularnewline
-AP\_32 & 450.000 & 454.828 & 450.830 & 442.938\tabularnewline
-AP\_33 & 1.950.000 & 1.474.903 & 1.461.938 & 1.436.347\tabularnewline
-AP\_34 & 2.150.000 & 2.597.848 & 2.575.011 & 2.529.937\tabularnewline
-AP\_35 & 940.000 & 969.142 & 960.623 & 943.808\tabularnewline
-AP\_36 & 1.400.000 & 1.334.839 & 1.323.105 & 1.299.945\tabularnewline
-AP\_37 & 1.090.000 & 1.002.811 & 993.996 & 976.596\tabularnewline
-AP\_38 & 1.272.000 & 999.341 & 990.556 & 973.217\tabularnewline
-AP\_39 & 2.800.000 & 1.921.706 & 1.904.812 & 1.871.470\tabularnewline
-AP\_40 & 1.796.000 & 2.075.621 & 2.057.374 & 2.021.361\tabularnewline
-AP\_41 & 1.400.000 & 1.398.114 & 1.385.824 & 1.361.566\tabularnewline
-AP\_42 & 3.000.000 & 3.306.637 & 3.277.569 & 3.220.197\tabularnewline
-AP\_43 & 1.200.000 & 1.062.442 & 1.053.103 & 1.034.669\tabularnewline
-AP\_44 & 800.000 & 646.536 & 640.853 & 629.635\tabularnewline
-AP\_45 & 950.000 & 668.014 & 662.142 & 650.551\tabularnewline
-AP\_46 & 2.061.000 & 2.267.978 & 2.248.041 & 2.208.690\tabularnewline
-AP\_47 & 1.326.000 & 1.575.944 & 1.562.090 & 1.534.746\tabularnewline
-AP\_48 & 850.000 & 776.375 & 769.550 & 756.079\tabularnewline
-AP\_49 & 1.650.000 & 1.509.488 & 1.496.218 & 1.470.028\tabularnewline
-AP\_50 & 650.000 & 834.750 & 827.412 & 812.929\tabularnewline
+\showrowcolors
+AP\_1 & 1.060.000 & 1.029.765 & 1.020.713 & 1.002.846\\
+AP\_2 & 510.000 & 628.132 & 622.610 & 611.712\\
+AP\_3 & 780.000 & 855.052 & 847.535 & 832.700\\
+AP\_4 & 550.000 & 736.956 & 730.478 & 717.691\\
+AP\_5 & 850.000 & 1.011.300 & 1.002.410 & 984.863\\
+\addlinespace
+AP\_6 & 300.000 & 358.594 & 355.441 & 349.220\\
+AP\_7 & 750.000 & 724.106 & 717.741 & 705.177\\
+AP\_8 & 650.000 & 657.475 & 651.695 & 640.288\\
+AP\_9 & 620.000 & 658.389 & 652.601 & 641.177\\
+AP\_10 & 740.000 & 662.002 & 656.182 & 644.696\\
+\addlinespace
+AP\_11 & 770.000 & 818.933 & 811.734 & 797.525\\
+AP\_12 & 680.000 & 702.573 & 696.397 & 684.207\\
+AP\_13 & 850.000 & 681.544 & 675.553 & 663.728\\
+AP\_14 & 420.000 & 551.781 & 546.931 & 537.357\\
+AP\_15 & 547.000 & 673.810 & 667.887 & 656.196\\
+\addlinespace
+AP\_16 & 1.600.000 & 1.413.047 & 1.400.625 & 1.376.108\\
+AP\_17 & 1.320.000 & 1.115.664 & 1.105.857 & 1.086.499\\
+AP\_18 & 615.000 & 645.338 & 639.665 & 628.468\\
+AP\_19 & 705.000 & 722.736 & 716.383 & 703.843\\
+AP\_20 & 418.000 & 435.824 & 431.993 & 424.431\\
+\addlinespace
+AP\_21 & 270.000 & 243.440 & 241.300 & 237.077\\
+AP\_22 & 418.000 & 485.426 & 481.159 & 472.736\\
+AP\_23 & 650.000 & 630.016 & 624.478 & 613.547\\
+AP\_24 & 700.000 & 774.614 & 767.805 & 754.365\\
+AP\_25 & 680.000 & 729.864 & 723.448 & 710.784\\
+\addlinespace
+AP\_26 & 420.000 & 350.336 & 347.256 & 341.178\\
+AP\_27 & 195.000 & 229.411 & 227.394 & 223.414\\
+AP\_28 & 290.000 & 279.686 & 277.228 & 272.375\\
+AP\_29 & 272.000 & 246.194 & 244.030 & 239.758\\
+AP\_30 & 430.000 & 399.634 & 396.121 & 389.187\\
+\addlinespace
+AP\_31 & 895.000 & 615.032 & 609.625 & 598.954\\
+AP\_32 & 450.000 & 454.828 & 450.830 & 442.938\\
+AP\_33 & 1.950.000 & 1.474.903 & 1.461.938 & 1.436.347\\
+AP\_34 & 2.150.000 & 2.597.848 & 2.575.011 & 2.529.937\\
+AP\_35 & 940.000 & 969.142 & 960.623 & 943.808\\
+\addlinespace
+AP\_36 & 1.400.000 & 1.334.839 & 1.323.105 & 1.299.945\\
+AP\_37 & 1.090.000 & 1.002.811 & 993.996 & 976.596\\
+AP\_38 & 1.272.000 & 999.341 & 990.556 & 973.217\\
+AP\_39 & 2.800.000 & 1.921.706 & 1.904.812 & 1.871.470\\
+AP\_40 & 1.796.000 & 2.075.621 & 2.057.374 & 2.021.361\\
+\addlinespace
+AP\_41 & 1.400.000 & 1.398.114 & 1.385.824 & 1.361.566\\
+AP\_42 & 3.000.000 & 3.306.637 & 3.277.569 & 3.220.197\\
+AP\_43 & 1.200.000 & 1.062.442 & 1.053.103 & 1.034.669\\
+AP\_44 & 800.000 & 646.536 & 640.853 & 629.635\\
+AP\_45 & 950.000 & 668.014 & 662.142 & 650.551\\
+\addlinespace
+AP\_46 & 2.061.000 & 2.267.978 & 2.248.041 & 2.208.690\\
+AP\_47 & 1.326.000 & 1.575.944 & 1.562.090 & 1.534.746\\
+AP\_48 & 850.000 & 776.375 & 769.550 & 756.079\\
+AP\_49 & 1.650.000 & 1.509.488 & 1.496.218 & 1.470.028\\
+AP\_50 & 650.000 & 834.750 & 827.412 & 812.929\\
 \bottomrule
-\end{longtable}
+\end{tabular}
+\end{table}
+
+\rowcolors{2}{white}{white}
 
 Os valores encontrados para o erro de predição médio quadrático para
 cada estimador foram: 203.939,11 para a média, 204.006,84 para a mediana
@@ -531,16 +554,21 @@ que comprova a teoria, já que o \emph{naive estimator} é enviesado com
 viés conhecido de \(-\sigma^2/2\), logo a média possui viés de
 \(-1,5\sigma^2\).
 
+\newpage
+
 \subsubsection{Modelo linear
 generalizado}\label{modelo-linear-generalizado}
 
 \section{CONCLUSÃO}\label{conclusao}
 
-Como vimos na seção \ref{sec:revisao-bibliografica}, o método clássico
-de regressão linear é uma minimização do erro médio quadrático de
-predição e a função de regressão \(\hat{m}_{Y;X}\) é uma equação para a
+Como vimos na seção \ref{revisao-bibliografica}, o método clássico de
+regressão linear é uma minimização do erro médio quadrático de predição
+e a função de regressão \(\hat{m}_{Y;X}\) é uma equação para a
 \emph{média} da população \(Y\). Considerando que são satisfeitas as
-hipóteses que
+hipóteses da regressão linear clássica, o melhor estimador para o valor
+será o da avaliação pela média, haja vista que, por definição, a
+regressão linear nada mais é do que um método de minimização do erro
+médio quadrático.
 
 \section*{REFERÊNCIAS}\label{referencias}
 \addcontentsline{toc}{section}{REFERÊNCIAS}

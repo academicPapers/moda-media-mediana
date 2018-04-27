@@ -31,6 +31,7 @@ params:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, dev = "png", dpi = 600, out.width = "70%", fig.pos = "H",
                       fig.path = "images/", fig.align = "center", warning = FALSE)
+type <- knitr::opts_knit$get("rmarkdown.pandoc.to")
 options(digits = 10)
 brformat <- function(x, decimal.mark = ",", big.mark = ".", digits = 2, nsmall = 2, scientific = FALSE, ...) {
   format(x, decimal.mark = decimal.mark, big.mark = big.mark, digits = digits, 
@@ -249,7 +250,10 @@ outliers <- c(31, 39)
 
 ## Cálculo do RMSPE
 
+
 ### Regressão linear
+
+Para o cálculo do RMSPE foi utilizado como referência o modelo proposto por Hochheim [-@hochheim, 29], ou seja, foram utilizadas as mesmas transformações de variáveis utilizadas no modelo proposto. Os valores dos $\beta_i$ são calculados a cada passo.
 
 ```{r}
 p <- vector(mode = "numeric", length = dim(dados)[1])
@@ -296,6 +300,8 @@ Os valores ajustados com os estimadores da moda, média e mediana podem ser vist
 tabela <- data.frame(Y = dados$valor, Média = p1, Mediana = p, Moda = p2)
 rownames(tabela) <- paste("AP_", 1:50, sep = "")
 kable(tabela,
+      format = ifelse(type == "html", "markdown", type),
+      caption = "Valores ajustados para os dados pelos estimadores",
       digits = 0, format.args = list(big.mark = "."), 
       booktabs = TRUE,
       row.names = TRUE) %>%
@@ -308,11 +314,13 @@ Os valores encontrados para o erro de predição médio quadrático para cada es
 
 Como esperado, o RMSPE foi menor para a média, e maior para a moda. O que comprova a teoria, já que o *naive estimator* é enviesado com viés conhecido de $-\sigma^2/2$, logo a média possui viés de $-1,5\sigma^2$.
 
+\newpage
+
 ### Modelo linear generalizado
 
 # CONCLUSÃO
 
-Como vimos na seção \ref{sec:revisao-bibliografica}, o método clássico de regressão linear é uma minimização do erro médio quadrático de predição e a função de regressão $\hat{m}_{Y;X}$ é uma equação para a *média* da população $Y$. Considerando que são satisfeitas as hipóteses que 
+Como vimos na seção \ref{revisao-bibliografica}, o método clássico de regressão linear é uma minimização do erro médio quadrático de predição e a função de regressão $\hat{m}_{Y;X}$ é uma equação para a *média* da população $Y$. Considerando que são satisfeitas as hipóteses da regressão linear clássica, o melhor estimador para o valor será o da avaliação pela média, haja vista que, por definição, a regressão linear nada mais é do que um método de minimização do erro médio quadrático.
 
 
 # REFERÊNCIAS {-}
