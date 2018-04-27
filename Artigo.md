@@ -1,9 +1,10 @@
 ---
 title: "Avaliação pela Moda, Média ou Mediana?"
 author:
-- Luiz Fernando Palin Droubi
-- Willian Zonato
-date: "16/04/2018"
+- Luiz Fernando Palin Droubi^[SPU/SC, luiz.droubi@planejamento.gov.br]
+- Norberto Hochheim^[UFSC, hochheim@gmail.com]
+- Willian Zonato^[SPU/SC, willian.zonato@planejamento.gov.br]
+date: "27/04/2018"
 output:
   html_document:
     fig_caption: yes
@@ -21,7 +22,7 @@ header-includes:
 documentclass: article
 link-citations: yes
 csl: ABNT_UFPR_2011-Mendeley.csl
-subtitle: Estudo de Caso
+subtitle: Teoria e simulações
 bibliography: bibliography.bib
 params:
   Nsim: 500
@@ -31,7 +32,80 @@ params:
 
 # INTRODUÇÃO
 
+Existe na área da avaliação de imóveis uma discussão frequente e indesejável a respeito da adoção da estimativa de tendência central adotada para a predição de valores quando da utilização de modelos lineares log-normais, isto é, modelos em que a variável resposta aparece transformada pela função logaritmo natural.[^1]
+
+[^1]: Neste artigo esta função é representada por $log$.
+
+Pretende-se com este artigo dar a este problema de uma abordagem formal. Entendemos que a norma brasileira [@NBR1465302] deveria tratar este assunto de maneira clara, especificando qual estimador deveria ser utilizado para a formação de valores.
+
+> Major Point 1: When we talk about the relationship of one variable to one or more others, we are referring to the regression function, which expresses the mean of the first variable as a function of the others. The key word here is *mean*! [matloff2009, 386, grifo do autor]
+
 # REVISÃO BIBLIOGRÁFICA
+
+> Earlier, we often referred to certain estimators as being “natural.” For example, if we are estimating a population mean, an obvious choice of estimator would be the sample mean. But in many applications, it is less clear what a “natural” estimate for a population quantity of interest would be. We will present general methods for estimation in this section. We will also discuss advanced methods of inference [@matloff2009, 303].
+
+## Estimadores
+
+A definição de um *estimador* para um parâmetro ou uma variável $\theta$ é uma função $\hat{\theta}(X)$, que mapeia o espaço amostral para um conjunto de estimativas amostrais, em que $X$ é uma variável aleatória dos dados observados. É usual denotar uma estimativa em para um determinado ponto $x \in X$ por $\hat{\theta}(X = x)$ ou, mais simplesmente, $\hat{\theta}(x)$.
+
+### Propriedades de um estimador
+
+#### Erro
+
+$$e(x) = \hat{\theta}(x) - \theta$$
+
+#### Erro médio quadrático
+
+$$MSE = E[\hat{\theta}(X) - \theta]$$
+
+#### Desvio
+
+$$d(x) = \hat{\theta}(x) - E(\hat{\theta}(X))$$
+onde $E(\hat{\theta}(X))$ é o Valor Esperado do estimador.
+
+#### Variância
+
+$$var(\hat{\theta}) = E[(\hat{\theta} - E(\hat{\theta})^2]$$
+
+#### Viés
+
+$$B(\hat{\theta}) = E(\hat{\theta}) - \theta$$
+
+O viés coincide com o valor esperado do erro, pois $E(\hat{\theta}) - \theta = E(\hat{\theta}-\theta)$.
+
+#### Consistência
+
+$$\lim_{n \rightarrow \infty}\hat{\theta} = \theta$$
+
+## Melhor estimador linear não-inviesado ou BLUE (Best Linear Unbiased Estimator)
+
+Em estatística, é comum o uso da sigla BLUE para indicar o melhor estimador linear não-enviesado.
+
+## Regressão linear
+
+### Definição precisa
+
+Sejam Y e X duas variáveis e $m_{Y;X}(t)$ uma função tal que: 
+
+$$m_{Y;X}(t) = E(Y|X = t)$$
+
+Chamamos $m_{Y;X}$ de **função de regressão de $Y$ dado $X$** [@matloff2009, 386, grifo do autor]. Em geral, $m_{Y;X}(t)$ é a **média** da de $Y$ para todas as unidades da população para as quais $X = t$ [@matloff2009, 386, grifo nosso].
+
+Segundo Matloff [-@matloff2009, 386, grifo do autor], ainda, a função $m_{Y;X}(t)$ é uma função da **população**, ou seja, apenas **estimamos** uma equação de regressão ($\hat{m}_{Y;X}(t)$) à partir de uma amostra da população.
+
+> The function $m_{Y;X}(t)$ is a population entity, so we must estimate it from our sample data. To do this, we have a choice of either assuming that $m_{Y;X}(t)$ takes on some parametric form, or making no such assumption. If we opt for a parametric approach, the most common model is linear [...] [@matloff2009, 389].
+
+Segundo Matloff [-@matloff2009, 394-397], as proposições acima sobre a função $m_{Y;X}$ pode ser generalizada para outras quantidades de regressores em $X$ e seus termos de interação, tal que:
+
+$$m_{Y;X}(t) = \beta_0 + \beta_1t_1 + \beta_2t_2 + \beta_3t_1t_2 + \beta_4t_1^2$$
+
+Notando que o termo **regressão linear** não necessariamente significa que o gráfico da função de regressão seja uma linha reta ou um plano, mas que se refere a função de regressão ser linear em relação aos seus parâmetros ($\beta_i$).
+
+## Estimação em modelos de regressão paramétricos
+
+Segundo Matloff [-@matloff2009, 389], é possível demonstrar que o mínimo valor da quantidade $E[(Y - g(X))^2]$ [^2] é obtido, entre todas as outras funções, para $g(X) = m_{Y;X}(X)$. Porém, "se pretendemos minimizar o erro médio absoluto de predição, $E(|Y - g(X)|)$ , a melhor função seria a mediana $g(Y) = mediana(Y|X)$." [@matloff2009, 389].
+
+[^2]: Erro médio quadrático de predição
 
 ## Esperança matemática ou Valor Esperado
 
@@ -43,8 +117,29 @@ Já para uma variável aleatória contínua, o valor esperado torna-se:
 
 $$E[X] = \int_{-\infty}^{\infty}xf(x)dx$$
 
-
 ## O problema da retransformação das variáveis
+
+Segundo [@shen, 552], modelos lineares lognormais tem muitas aplicações e muitas vezes é de interesse prever a variável resposta ou estimar a média da variável resposta na escala original para um novo conjunto de covariantes.
+
+Segundo Shen e Zhu[-@shen, 552], se $Z = (Z_1,\cdots, Z_n)^T$ é o vetor variável resposta de distribuição lognormal e $x_i = (1, x_{i1}, \cdots, x_{ip})^T$ é o vetor dos covariantes para a observação $i$, um modelo linear log-normal assume a seguinte forma:
+
+$$Y = log(Z) = X\beta + \epsilon$$
+onde $X = (x_1, \cdots, x_n)^T$, $\beta = (\beta_0, \beta_1, \cdots, \beta_p)^T$, e $\epsilon = (\epsilon_1, \cdots, \epsilon_n)^T$ com $\epsilon_i \sim  N(0, \sigma^2)$ i.i.d.(*identically independently distributed*) [@shen, 552-553].
+
+> Em muitos casos, para um novo conjunto de covariantes $x_0$, pode-se estar interessado em prever a variável resposta em sua escala 
+> original:
+>
+> $$Z_0 = e^{x_o^T\beta + \epsilon_0}$$
+>
+> ou estimar a média condicional da variável resposta:
+>
+> $$\mu(x_0)=E[Z_0|x_o] = e^{x_o^T\beta + \frac{1}{2}\sigma^2}$$
+
+De acordo com Shen e Zhu[-@shen, 553], se $\beta$ e $\sigma^2$ são ambos conhecidos, então é fácil demonstrar que o melhor estimador de $Z_0$ é de fato $\mu(x_0)$. Contudo, na prática, ambos $\beta$ e $\sigma^2$ são desconhecidos e precisam ser estimados para a obtenção de $\mu(x_0)$.
+
+Segundo Shen e Zhu [-@shen, 552], existem na literatura diversos estimadores baseados em diversos métodos inferenciais, como **ML** (*Maximum Likelihood  Estimator*), **REML** (*Restricted ML Estimator*), **UMVU** (*Uniformly Minimum Variance Unbiased Estimator*), além de um estimador **REML** com viés corrigido.
+
+Shen e Zhu[-@shen] então propõem dois novos estimadores baseados na minimização do erro médio quadrático assintótico e do viés assintótico.
 
 ### Regressão Linear
 
@@ -52,440 +147,152 @@ De acordo com Duan [-@Duan, 606], o Valor Esperado $E$ de uma variável resposta
 
 $$E[Y_0] = E[h(x_0\beta + \epsilon)] \ne h(x_o\beta)$$
 
-Numa regressão linear logaritmizada, ou seja, uma regressão linear com o logarítmo da variável dependente ($h(\eta) = g^{-1}(\eta) = exp(\eta)$), para efetuar apropriadamente a retransformação das estimativas de volta a sua escala original, precisa-se ter em conta a desigualdade mencionada na seção \ref{esperanca-matematica-ou-valor-esperado}.
+Numa regressão log-linear, ou seja, uma regressão linear com o logaritmo da variável dependente ($h(\eta) = g^{-1}(\eta) = exp(\eta)$), para efetuar apropriadamente a retransformação das estimativas de volta a sua escala original, precisa-se ter em conta a desigualdade mencionada na seção \ref{esperança-matemática-ou-valor-esperado}.
 
 Segundo [@NBERt0246], quando ajustamos o logaritmo natural de uma variável $Y$ contra outra variável $X$ através da seguinte equação de regressão:
 
 $$ln(Y) = \beta_0 + \beta_1X + \epsilon$$
 
-De acordo com [@NBERt0246, 6; @Duan, 606], se o erro $\epsilon$ é normalmete distribuído, com média zero e desvio padrão $\sigma^2$, ou seja, se $\epsilon \sim N(0, \sigma^2)$, então:
+Se o erro $\epsilon$ é normalmente distribuído, com média zero e desvio padrão $\sigma^2$, ou seja, se $\epsilon \sim N(0, \sigma^2)$, então [@NBERt0246, 6; @Duan, 606]:
 
 $$E[Y|X] = e^{\beta_0 + \beta_1X} \cdot E[e^\epsilon] \ne e^{\beta_0 + \beta_1X}$$
 
-Embora o valor esperado dos resíduos $\epsilon$ seja igual a zero, ele está submetido a uma transformação não linear, de maneira que não podemos afirmar que $E[e^\epsilon] = 1$, como vimos na seção anterior. Desta maneira, o estimador abaixo é enviesado:
+Embora o valor esperado dos resíduos $\epsilon$ seja igual a zero, ele está submetido a uma transformação não linear, de maneira que não podemos afirmar que $E[e^\epsilon] = 1$, como vimos na seção anterior. Desta maneira, o estimador abaixo, chamado em [@shen, 554] de *naive back-transform estimator*, ou simplesmente **BT** não é consistente e é enviesado, tendo viés multiplicativo de valor assintótico igual a $e^{-\sigma^2/2}$:
 
 $$E[Y|X] = e^{\beta_0 + \beta_1X}$$
+
+Segundo [@shen, 554], ainda, o valor de $e^{-\sigma^2/2}$ é sempre menor do que 1[@shen, 554].
+
+> As a result, the BT estimator underestimates $\mu(x_0)$, and the bias is large when $\sigma^2$ is large. In our study, it appears that the BT estimator performs much worse than the other estimators[...]Actually, the BT estimator is more suitable for estimating the median of Z0, which is $exp(x_0^T\beta)$ in this case.
 
 Porém se o termo de erro $\epsilon$ é normalmente distribuído $N(0,\sigma^2)$, então um estimador não-enviesado para o valor esperado $E[Y]$, de acordo com @Duan, assume a forma vista na equação abaixo[@Duan, 606; @NBERt0246, 2 e 6]:
 
 $$E[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}$$
 
-### Modelo linear generalizado (*GLM*)
+Cabe salientar, segundo [@NBERt0246, 6], que se o termo de erro não for i.i.d (independentes e identicamente distribuídos), mas for homoscedástico, então:
 
-De acordo com [@NBERt0246, 3-4], um modelo linear generalizado com uma função de ligação logarítimica estimam $log(E[Y|X])$ diretamente, de tal maneira que:
+$$E[Y|X]=s \times e^{X_0\beta}$$
+onde $s = E[e^\epsilon]$.
 
-$$log(E[y|X]) = x\beta$$ ou
-$$E[Y|X] = e^{x\beta}$$
+De qualquer maneira, o valor esperado de $Y$ é proporcional à exponencial da previsão na escala log.
+
+### Modelos Heteroscedásticos
+
+Modelos heteroscedásticos não são raros, especialmente no caso de variáveis envolvendo valores em moeda, sendo muito comum em modelos econométricos. Em sua essência, são heteroscedásticos aqueles modelos lineares cujo termo de erro não pode ser considerado totalmente independente, ou seja, existe alguma função (linear ou não), tal que $E[e^\epsilon] = f(x)$, de modo que:
+
+$$log(E[Y|X]) = X\beta + log(f(x))$$
+
+É desnecessário dizer que, para estes modelos o estimador para a média é diferente de $E[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}$, haja vista que $\sigma^2$ não é mais um escalar, mas uma função.
+
+Existem diversas maneiras de se contornar este problema. Por exemplo, através da eliminação do viés através da utilização de uma função que modele a variância $\sigma^2(X)$, ou através do estimador sanduíche[^3].
+
+[^3]: ver [link](https://matloff.wordpress.com/2015/09/18/can-you-say-heteroscedasticity-3-times-fast/)
+
+Cabe ainda salientar que, para os modelos heteroscedásticos, não apenas os erros estão comprometidos, mas também os intervalos de confiança.
+
+## Modelo linear generalizado (*GLM*)
+
+De acordo com [@NBERt0246, 3-4], um modelo linear generalizado com uma função de ligação logarítmica estimam $log(E[Y|X])$ diretamente, de tal maneira que:
+
+$$log(E[Y|X]) = X\beta$$ ou
+$$E[Y|X] = e^{X\beta}$$
+
+## Validação Cruzada 
+
+Validação Cruzada ou *cross-validation* é uma técnica estatística que pode ser utilizada de diversas maneiras e consistem em dividir um conjunto de dados em duas partições distintas, chamados de partição de treino (*training set*) e partição de teste(*test set*), utilizadas para o ajuste do modelo e para a previsão da variável dependente, respectivamente. Os dados previstos na partição de teste são então comparados aos valores observados.
+
+Neste artigo efetuaremos a validação-cruzada utilizando o procedimento chamado de *delete-one procedure*, em que se retira apenas um dado do conjunto de dados, ajusta-se um modelo e então utiliza-se este modelo para prever o valor da variável dependente para o dado retirado [@shen, 564].
+
+Para cada observação então calcula-se o seu erro quadrático ($(Y_i - \hat{Y}_i)^2$), utilizado para o cálculo da estatística RMSPE (erro de previsão médio quadrático *root mean squared prediction error*), conforme expressão a seguir [@shen, 564]:
+
+$$(\frac{1}{n}\sum_{i = 1}^{n}(Y_i - \hat{Y}_i)^2)^{1/2}$$
 
 # ESTUDO DE CASO
 
-Neste estudo comparamos a precisão de diversos tipos de modelos estatísticos (regressão linear, regressão não-linear e modelo linear generalizado) sobre dados gerados com erros randômicos normais com média zero e desvio-padrão $\sigma = 1$.
+Com o fim de averiguar qual estimador melhor se adequa ao procedimento de retransformação de variáveis, aplicar-se-á um comparativo entre os estimadores média, moda e mediana, através do uso da estatística RMSPE.
 
-## Geração de dados randômicos
+## Dados
 
-Para a geração de dados foi utilizada a seguinte expressão teórica, dentro do intervalo $0 \leqslant x \leqslant  1$:
+Neste estudo comparamos a precisão de diversos tipos de modelos estatísticos (regressão linear, regressão não-linear e modelo linear generalizado) sobre os dados disponíveis em Hochheim [-@hochheim, 21-22].
 
-$$y = e^{-5x + 2}$$
-Para obter alguma variabilidade, foram adicionados aos valores teóricos de $y$ erros normais $N(0;0,2)$.
 
 
-```r
-set.seed(123)
-Nsim <- params$Nsim
+## Cálculo do RMSPE
 
-a = -5
-b = 2
+### Regressão linear
 
-x = runif(Nsim, 0, 1)
-y = exp(a*x + b + rnorm(Nsim, 0, .2))
-```
 
-* Gráfico dos dados gerados
 
 
-```r
-plot(x,y, pch = 16, cex = 0.5)
-```
 
-<div class="figure" style="text-align: center">
-<img src="images/grafico-1.png" alt="Gráfico dos dados gerados" width="70%" />
-<p class="caption">Gráfico dos dados gerados</p>
-</div>
 
 
-### Gráfico da variável transformada
+Os valores ajustados com os estimadores da moda, média e mediana podem ser vistos na tabela abaixo:
 
 
-```r
-plot(x, log(y), pch = 16, cex = 0.5) 
-abline(lm(log(y) ~ x), col = 2)
-```
+                 Y       Média     Mediana        Moda
+------  ----------  ----------  ----------  ----------
+AP_1     1.060.000   1.029.765   1.020.713   1.002.846
+AP_2       510.000     628.132     622.610     611.712
+AP_3       780.000     855.052     847.535     832.700
+AP_4       550.000     736.956     730.478     717.691
+AP_5       850.000   1.011.300   1.002.410     984.863
+AP_6       300.000     358.594     355.441     349.220
+AP_7       750.000     724.106     717.741     705.177
+AP_8       650.000     657.475     651.695     640.288
+AP_9       620.000     658.389     652.601     641.177
+AP_10      740.000     662.002     656.182     644.696
+AP_11      770.000     818.933     811.734     797.525
+AP_12      680.000     702.573     696.397     684.207
+AP_13      850.000     681.544     675.553     663.728
+AP_14      420.000     551.781     546.931     537.357
+AP_15      547.000     673.810     667.887     656.196
+AP_16    1.600.000   1.413.047   1.400.625   1.376.108
+AP_17    1.320.000   1.115.664   1.105.857   1.086.499
+AP_18      615.000     645.338     639.665     628.468
+AP_19      705.000     722.736     716.383     703.843
+AP_20      418.000     435.824     431.993     424.431
+AP_21      270.000     243.440     241.300     237.077
+AP_22      418.000     485.426     481.159     472.736
+AP_23      650.000     630.016     624.478     613.547
+AP_24      700.000     774.614     767.805     754.365
+AP_25      680.000     729.864     723.448     710.784
+AP_26      420.000     350.336     347.256     341.178
+AP_27      195.000     229.411     227.394     223.414
+AP_28      290.000     279.686     277.228     272.375
+AP_29      272.000     246.194     244.030     239.758
+AP_30      430.000     399.634     396.121     389.187
+AP_31      895.000     615.032     609.625     598.954
+AP_32      450.000     454.828     450.830     442.938
+AP_33    1.950.000   1.474.903   1.461.938   1.436.347
+AP_34    2.150.000   2.597.848   2.575.011   2.529.937
+AP_35      940.000     969.142     960.623     943.808
+AP_36    1.400.000   1.334.839   1.323.105   1.299.945
+AP_37    1.090.000   1.002.811     993.996     976.596
+AP_38    1.272.000     999.341     990.556     973.217
+AP_39    2.800.000   1.921.706   1.904.812   1.871.470
+AP_40    1.796.000   2.075.621   2.057.374   2.021.361
+AP_41    1.400.000   1.398.114   1.385.824   1.361.566
+AP_42    3.000.000   3.306.637   3.277.569   3.220.197
+AP_43    1.200.000   1.062.442   1.053.103   1.034.669
+AP_44      800.000     646.536     640.853     629.635
+AP_45      950.000     668.014     662.142     650.551
+AP_46    2.061.000   2.267.978   2.248.041   2.208.690
+AP_47    1.326.000   1.575.944   1.562.090   1.534.746
+AP_48      850.000     776.375     769.550     756.079
+AP_49    1.650.000   1.509.488   1.496.218   1.470.028
+AP_50      650.000     834.750     827.412     812.929
 
-<div class="figure" style="text-align: center">
-<img src="images/graficotrans-1.png" alt="Gráfico da variável transformada" width="70%" />
-<p class="caption">Gráfico da variável transformada</p>
-</div>
 
-## Ajuste da regressão não-linear
+Os valores encontrados para o erro de predição médio quadrático para cada estimador foram: 203.939,11 para a média, 204.006,84 para a mediana e 205.537,36 para a moda.
 
+Como esperado, o RMSPE foi menor para a média, e maior para a moda. O que comprova a teoria, já que o *naive estimator* é enviesado com viés conhecido de $-\sigma^2/2$, logo a média possui viés de $-1,5\sigma^2$.
 
-```r
-### NLS Fit
-NLfit <- nls(y ~ exp(a*x+b), start = c(a = -10, b = 15)) 
-```
+### Modelo linear generalizado
 
-### Coeficientes
+# CONCLUSÃO
 
-
-```r
-co <- coef(NLfit)
-co
-```
-
-```
-##            a            b 
-## -5.036924282  2.037150229
-```
-
-### Gráfico do modelo não-linear
-
-
-```r
-f <- function(x,a,b) {exp(a*x+b)}
-curve(f(x = x, a = co[1], b = co[2]), col = 2, lwd = 1.2) 
-curve(f(x = x, a = -5, b = 2), col = 3, lwd = 1.5, add = TRUE)
-```
-
-<div class="figure" style="text-align: center">
-<img src="images/graficoNL-1.png" alt="Gráfico do modelo não-linear" width="70%" />
-<p class="caption">Gráfico do modelo não-linear</p>
-</div>
-
-### Estimativas do modelo não-linear
-
-
-```r
-pNLfit <- predict(NLfit, newdata = data.frame(x = .7))
-pNLfit
-```
-
-```
-## [1] 0.2256665598
-```
-
-O valor teórico obtido pela equação original ($y = e^{-5x + 2}$) é de:
-
-
-```r
-Yteorico <- exp(-5*.7 + 2)
-round(Yteorico, 4)
-```
-
-```
-## [1] 0.2231
-```
-
-$$\epsilon = \frac{\hat{Y} - Y_{teórico}}{Y_{teórico}}$$
-
-O valor obtido pelo modelo é muito próximo do valor teórico. O erro do modelo, portanto, é de 1.14\%.
-
-## Ajuste de modelo linear generalizado
-
-### Poisson
-
-
-```r
-Gfit <- glm(y ~ x, family = poisson())
-summary(Gfit)
-```
-
-```
-## 
-## Call:
-## glm(formula = y ~ x, family = poisson())
-## 
-## Deviance Residuals: 
-##         Min           1Q       Median           3Q          Max  
-## -0.84928622  -0.10703487  -0.00223467   0.08911943   1.13986134  
-## 
-## Coefficients:
-##                Estimate  Std. Error   z value   Pr(>|z|)    
-## (Intercept)  2.03777121  0.05686302  35.83650 < 2.22e-16 ***
-## x           -5.04801321  0.21002266 -24.03556 < 2.22e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for poisson family taken to be 1)
-## 
-##     Null deviance: 929.120787  on 499  degrees of freedom
-## Residual deviance:  28.124168  on 498  degrees of freedom
-## AIC: Inf
-## 
-## Number of Fisher Scoring iterations: 4
-```
-
-#### Estimativa com o modelo linear generalizado com Poisson
-
-
-```r
-pGfit <- predict(Gfit, newdata = data.frame(x = .7), type = "response")
-pGfit
-```
-
-```
-##            1 
-## 0.2240607549
-```
-
-O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de 0.417\%.
-
-### Gauss
-
-
-```r
-Gfit2 <- glm(y ~ x, family = gaussian(link = "log"))
-summary(Gfit2)
-```
-
-```
-## 
-## Call:
-## glm(formula = y ~ x, family = gaussian(link = "log"))
-## 
-## Deviance Residuals: 
-##         Min           1Q       Median           3Q          Max  
-## -1.99071791  -0.09962561  -0.00180600   0.05087798   2.66506068  
-## 
-## Coefficients:
-##                Estimate  Std. Error   t value   Pr(>|t|)    
-## (Intercept)  2.03715009  0.01278532 159.33511 < 2.22e-16 ***
-## x           -5.03692306  0.08321099 -60.53195 < 2.22e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for gaussian family taken to be 0.1896144792)
-## 
-##     Null deviance: 1635.880265  on 499  degrees of freedom
-## Residual deviance:   94.427986  on 498  degrees of freedom
-## AIC: 591.55323
-## 
-## Number of Fisher Scoring iterations: 4
-```
-
-#### Estimativa com o modelo linear generalizado com Gauss
-
-
-```r
-pGfit2 <- predict(Gfit2, newdata = data.frame(x = .7), type = "response")
-pGfit2
-```
-
-```
-##           1 
-## 0.225666721
-```
-
-O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de 1.14\%. Observar que a adoção de ajuste por modelo linear generalizado com família gaussiana e *log-link* é equivalente ao ajustamento de um modelo de regressão não-linear, como visto na seção anterior.
-
-## Ajuste de Regressão Linear com variável dependente transformada
-
-
-```r
-### LM Fit
-fit <- lm(log(y) ~ x)
-s <- summary(fit)
-s
-```
-
-```
-## 
-## Call:
-## lm(formula = log(y) ~ x)
-## 
-## Residuals:
-##         Min          1Q      Median          3Q         Max 
-## -0.56559208 -0.12366290  0.00710528  0.13873431  0.53612439 
-## 
-## Coefficients:
-##                Estimate  Std. Error   t value   Pr(>|t|)    
-## (Intercept)  1.99999690  0.01808798  110.5705 < 2.22e-16 ***
-## x           -4.99122273  0.03167777 -157.5623 < 2.22e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.2012649 on 498 degrees of freedom
-## Multiple R-squared:  0.9803348,	Adjusted R-squared:  0.9802953 
-## F-statistic: 24825.88 on 1 and 498 DF,  p-value: < 2.2204e-16
-```
-
-### Gráfico do modelo linear
-
-
-```r
-#plotmod(fit)
-```
-
-
-### Estimativas
-
-a. Pela mediana
-
-
-```r
-Y <- predict(fit, newdata = data.frame(x = .7))
-p_mediana <- exp(Y)
-p_mediana
-```
-
-```
-##            1 
-## 0.2245046155
-```
-
-O erro do modelo, neste caso, é de 0.616\%.
-
-b. Pela moda
-
-
-```r
-p_moda <- exp(Y - s$sigma^2)
-p_moda
-```
-
-```
-##            1 
-## 0.2155922126
-```
-
-O erro do modelo, neste caso, é de -3.38\%.
-
-c. Pela média
-
-
-```r
-p_media <- exp(Y + s$sigma^2/2)
-p_media
-```
-
-```
-##            1 
-## 0.2290980412
-```
-
-O erro do modelo, neste caso, é de 2.67\%.
-
-## Comparação dos resultados obtidos
-
-| Modelo                | Previsão                    | Erro (%)                                    | 
-|:----------------------|----------------------------:|--------------------------------------------:|
-| **Valor Teórico**     | **0.2231**  | ------                                      |
-| Regressão Não-Linear  | 0.2257        |1.14\%     |
-| GLM (Poisson)         | 0.2241         |0.417\%      |
-| GLM (Gauss)           | 0.2257        |1.14\%     |
-| LM (Mediana)          | 0.2245     |0.616\%  |
-| LM (Moda)             | 0.2156        |-3.38\%     |
-| LM (Média)            | 0.2291       |2.67\%    |
-
-# Método de Monte-Carlo
-
-O resultados acima não devem ser interpretados como taxativos, pois os valores encontrados foram obtidos de dados gerados randomicamente e em único ponto.
-
-Para uma comparação mais precisa entre os modelos testados, utilizamos o método de Monte Carlo em conjunto com a técnica de validação cruzada, simulando os modelos em apenas parte dos dados (*training set*) e fazendo previsões dos dados na outra particação (*test set*).
-
-Para este caso, vamos dividir randomicamente os dados em duas partições iguais, ou seja, os modelos serão gerados nos 50 dados do *test set* e as predições serão comparadas aos 50 dados restantes do *test set*.
-
-
-```r
-pNL <- list()
-pG <- list()
-pG2 <- list()
-p_mediana <- list()
-p_moda <- list()
-p_media <- list()
-ASPE_pNL <- vector(mode = "numeric", length = Nsim/2)
-ASPE_pG <- vector(mode = "numeric", length = Nsim/2)
-ASPE_pG2 <- vector(mode = "numeric", length = Nsim/2)
-ASPE_mediana <- vector(mode = "numeric", length = Nsim/2)
-ASPE_moda <- vector(mode = "numeric", length = Nsim/2)
-ASPE_media <- vector(mode = "numeric", length = Nsim/2)
-df <- data.frame(Y = y, X = x)
-for (i in seq_len(Nsim)) {
-  subset <- sample(Nsim, Nsim/2, replace = FALSE)
-  trainingset <- df[subset, ]  
-  testset <-  df[-subset, ]
-  NLfit <- nls(Y ~ exp(a*X + b), data = trainingset, start = c(a = -10, b = 15)) 
-  Gfit <- glm(Y ~ X, family = poisson(), data = trainingset)
-  Gfit2 <- glm(Y ~ X, family = gaussian(link = "log"), data = trainingset)
-  fit <- lm(log(Y) ~ X, data = trainingset)
-  s <- summary(fit)
-  pNL[[i]] <- predict(NLfit, newdata = testset)
-  pG[[i]] <- predict(Gfit, newdata = testset, type = "response")
-  pG2[[i]] <- predict(Gfit2, newdata = testset, type = "response")
-  p_mediana[[i]] <- exp(predict(fit, newdata = testset))
-  p_moda[[i]] <- exp(predict(fit, newdata = testset) - s$sigma^2)
-  p_media[[i]] <- exp(predict(fit, newdata = testset) + s$sigma^2/2)
-  ASPE_pNL[i] <- sum((pNL[[i]] - testset)^2)
-  ASPE_pG[i] <- sum((pG[[i]] - testset)^2)
-  ASPE_pG2[i] <- sum((pG2[[i]] - testset)^2)
-  ASPE_mediana[i] <- sum((p_mediana[[i]] - testset)^2)
-  ASPE_moda[i] <- sum((p_moda[[i]] - testset)^2)
-  ASPE_media[i] <- sum((p_media[[i]] - testset)^2)
-}
-mean(ASPE_pNL)
-```
-
-```
-## [1] 1288.194588
-```
-
-```r
-mean(ASPE_pG)
-```
-
-```
-## [1] 1285.677349
-```
-
-```r
-mean(ASPE_pG2)
-```
-
-```
-## [1] 1288.194148
-```
-
-```r
-mean(ASPE_mediana)
-```
-
-```
-## [1] 1208.550019
-```
-
-```r
-mean(ASPE_moda)
-```
-
-```
-## [1] 1123.6968
-```
-
-```r
-mean(ASPE_media)
-```
-
-```
-## [1] 1255.342248
-```
-
-* Gráficos
-
-<div class="figure" style="text-align: center">
-<img src="images/histogramas-1.png" alt="Histogramas das variáveis simuladas" width="100%" />
-<p class="caption">Histogramas das variáveis simuladas</p>
-</div>
-
-
+Como vimos na seção \ref{sec:revisao-bibliografica}, o método clássico de regressão linear é uma minimização do erro médio quadrático de predição e a função de regressão $\hat{m}_{Y;X}$ é uma equação para a *média* da população $Y$. Considerando que são satisfeitas as hipóteses que 
 
 
 # REFERÊNCIAS {-}

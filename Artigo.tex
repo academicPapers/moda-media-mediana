@@ -25,50 +25,10 @@
 \usepackage{hyperref}
 \hypersetup{unicode=true,
             pdftitle={Avaliação pela Moda, Média ou Mediana?},
-            pdfauthor={Luiz Fernando Palin Droubi; Willian Zonato},
+            pdfauthor={Luiz Fernando Palin Droubi; Norberto Hochheim; Willian Zonato},
             pdfborder={0 0 0},
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\usepackage{framed}
-\definecolor{shadecolor}{RGB}{248,248,248}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
 \usepackage{longtable,booktabs}
 \usepackage{graphicx,grffile}
 \makeatletter
@@ -117,13 +77,29 @@
   \title{Avaliação pela Moda, Média ou Mediana?}
   \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
-\subtitle{Estudo de Caso}
-  \author{Luiz Fernando Palin Droubi \\ Willian Zonato}
+\subtitle{Teoria e simulações}
+  \author{Luiz Fernando Palin Droubi\footnote{SPU/SC,
+  \href{mailto:luiz.droubi@planejamento.gov.br}{\nolinkurl{luiz.droubi@planejamento.gov.br}}} \\ Norberto Hochheim\footnote{UFSC,
+  \href{mailto:hochheim@gmail.com}{\nolinkurl{hochheim@gmail.com}}} \\ Willian Zonato\footnote{SPU/SC,
+  \href{mailto:willian.zonato@planejamento.gov.br}{\nolinkurl{willian.zonato@planejamento.gov.br}}}}
   \preauthor{\centering\large\emph}
   \postauthor{\par}
   \predate{\centering\large\emph}
   \postdate{\par}
-  \date{13/04/2018}
+  \date{27/04/2018}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage[normalem]{ulem}
 
 \usepackage[brazil]{babel}
 \usepackage{graphicx}
@@ -136,7 +112,136 @@
 
 \section{INTRODUÇÃO}\label{introducao}
 
+Existe na área da avaliação de imóveis uma discussão frequente e
+indesejável a respeito da adoção da estimativa de tendência central
+adotada para a predição de valores quando da utilização de modelos
+lineares log-normais, isto é, modelos em que a variável resposta aparece
+transformada pela função logaritmo natural.\footnote{Neste artigo esta
+  função é representada por \(log\).}
+
+Pretende-se com este artigo dar a este problema de uma abordagem formal.
+Entendemos que a norma brasileira (ABNT,
+\protect\hyperlink{ref-NBR1465302}{2011}) deveria tratar este assunto de
+maneira clara, especificando qual estimador deveria ser utilizado para a
+formação de valores.
+
+\begin{quote}
+Major Point 1: When we talk about the relationship of one variable to
+one or more others, we are referring to the regression function, which
+expresses the mean of the first variable as a function of the others.
+The key word here is \emph{mean}! {[}matloff2009, 386, grifo do autor{]}
+\end{quote}
+
 \section{REVISÃO BIBLIOGRÁFICA}\label{revisao-bibliografica}
+
+\begin{quote}
+Earlier, we often referred to certain estimators as being ``natural.''
+For example, if we are estimating a population mean, an obvious choice
+of estimator would be the sample mean. But in many applications, it is
+less clear what a ``natural'' estimate for a population quantity of
+interest would be. We will present general methods for estimation in
+this section. We will also discuss advanced methods of inference
+(MATLOFF, \protect\hyperlink{ref-matloff2009}{2009}, p. 303).
+\end{quote}
+
+\subsection{Estimadores}\label{estimadores}
+
+A definição de um \emph{estimador} para um parâmetro ou uma variável
+\(\theta\) é uma função \(\hat{\theta}(X)\), que mapeia o espaço
+amostral para um conjunto de estimativas amostrais, em que \(X\) é uma
+variável aleatória dos dados observados. É usual denotar uma estimativa
+em para um determinado ponto \(x \in X\) por \(\hat{\theta}(X = x)\) ou,
+mais simplesmente, \(\hat{\theta}(x)\).
+
+\subsubsection{Propriedades de um
+estimador}\label{propriedades-de-um-estimador}
+
+\paragraph{Erro}\label{erro}
+
+\[e(x) = \hat{\theta}(x) - \theta\]
+
+\paragraph{Erro médio quadrático}\label{erro-medio-quadratico}
+
+\[MSE = E[\hat{\theta}(X) - \theta]\]
+
+\paragraph{Desvio}\label{desvio}
+
+\[d(x) = \hat{\theta}(x) - E(\hat{\theta}(X))\] onde
+\(E(\hat{\theta}(X))\) é o Valor Esperado do estimador.
+
+\paragraph{Variância}\label{variancia}
+
+\[var(\hat{\theta}) = E[(\hat{\theta} - E(\hat{\theta})^2]\]
+
+\paragraph{Viés}\label{vies}
+
+\[B(\hat{\theta}) = E(\hat{\theta}) - \theta\]
+
+O viés coincide com o valor esperado do erro, pois
+\(E(\hat{\theta}) - \theta = E(\hat{\theta}-\theta)\).
+
+\paragraph{Consistência}\label{consistencia}
+
+\[\lim_{n \rightarrow \infty}\hat{\theta} = \theta\]
+
+\subsection{Melhor estimador linear não-inviesado ou BLUE (Best Linear
+Unbiased
+Estimator)}\label{melhor-estimador-linear-nao-inviesado-ou-blue-best-linear-unbiased-estimator}
+
+Em estatística, é comum o uso da sigla BLUE para indicar o melhor
+estimador linear não-enviesado.
+
+\subsection{Regressão linear}\label{regressao-linear}
+
+\subsubsection{Definição precisa}\label{definicao-precisa}
+
+Sejam Y e X duas variáveis e \(m_{Y;X}(t)\) uma função tal que:
+
+\[m_{Y;X}(t) = E(Y|X = t)\]
+
+Chamamos \(m_{Y;X}\) de \textbf{função de regressão de \(Y\) dado \(X\)}
+(MATLOFF, \protect\hyperlink{ref-matloff2009}{2009}, p. 386, grifo do
+autor). Em geral, \(m_{Y;X}(t)\) é a \textbf{média} da de \(Y\) para
+todas as unidades da população para as quais \(X = t\) (MATLOFF,
+\protect\hyperlink{ref-matloff2009}{2009}, p. 386, grifo nosso).
+
+Segundo Matloff (\protect\hyperlink{ref-matloff2009}{2009}, p. 386,
+grifo do autor), ainda, a função \(m_{Y;X}(t)\) é uma função da
+\textbf{população}, ou seja, apenas \textbf{estimamos} uma equação de
+regressão (\(\hat{m}_{Y;X}(t)\)) à partir de uma amostra da população.
+
+\begin{quote}
+The function \(m_{Y;X}(t)\) is a population entity, so we must estimate
+it from our sample data. To do this, we have a choice of either assuming
+that \(m_{Y;X}(t)\) takes on some parametric form, or making no such
+assumption. If we opt for a parametric approach, the most common model
+is linear {[}\ldots{}{]} (MATLOFF,
+\protect\hyperlink{ref-matloff2009}{2009}, p. 389).
+\end{quote}
+
+Segundo Matloff (\protect\hyperlink{ref-matloff2009}{2009}, pp.
+394--397), as proposições acima sobre a função \(m_{Y;X}\) pode ser
+generalizada para outras quantidades de regressores em \(X\) e seus
+termos de interação, tal que:
+
+\[m_{Y;X}(t) = \beta_0 + \beta_1t_1 + \beta_2t_2 + \beta_3t_1t_2 + \beta_4t_1^2\]
+
+Notando que o termo \textbf{regressão linear} não necessariamente
+significa que o gráfico da função de regressão seja uma linha reta ou um
+plano, mas que se refere a função de regressão ser linear em relação aos
+seus parâmetros (\(\beta_i\)).
+
+\subsection{Estimação em modelos de regressão
+paramétricos}\label{estimacao-em-modelos-de-regressao-parametricos}
+
+Segundo Matloff (\protect\hyperlink{ref-matloff2009}{2009}, p. 389), é
+possível demonstrar que o mínimo valor da quantidade
+\(E[(Y - g(X))^2]\)\footnote{Erro médio quadrático de predição} é
+obtido, entre todas as outras funções, para \(g(X) = m_{Y;X}(X)\).
+Porém, ``se pretendemos minimizar o erro médio absoluto de predição,
+\(E(|Y - g(X)|)\) , a melhor função seria a mediana
+\(g(Y) = mediana(Y|X)\).'' (MATLOFF,
+\protect\hyperlink{ref-matloff2009}{2009}, p. 389).
 
 \subsection{Esperança matemática ou Valor
 Esperado}\label{esperanca-matematica-ou-valor-esperado}
@@ -159,6 +264,54 @@ Já para uma variável aleatória contínua, o valor esperado torna-se:
 \subsection{O problema da retransformação das
 variáveis}\label{o-problema-da-retransformacao-das-variaveis}
 
+Segundo (SHEN; ZHU, \protect\hyperlink{ref-shen}{2008}, p. 552), modelos
+lineares lognormais tem muitas aplicações e muitas vezes é de interesse
+prever a variável resposta ou estimar a média da variável resposta na
+escala original para um novo conjunto de covariantes.
+
+Segundo Shen e Zhu(\protect\hyperlink{ref-shen}{2008}, p. 552), se
+\(Z = (Z_1,\cdots, Z_n)^T\) é o vetor variável resposta de distribuição
+lognormal e \(x_i = (1, x_{i1}, \cdots, x_{ip})^T\) é o vetor dos
+covariantes para a observação \(i\), um modelo linear log-normal assume
+a seguinte forma:
+
+\[Y = log(Z) = X\beta + \epsilon\] onde \(X = (x_1, \cdots, x_n)^T\),
+\(\beta = (\beta_0, \beta_1, \cdots, \beta_p)^T\), e
+\(\epsilon = (\epsilon_1, \cdots, \epsilon_n)^T\) com
+\(\epsilon_i \sim N(0, \sigma^2)\) i.i.d.(\emph{identically
+independently distributed}) (SHEN; ZHU,
+\protect\hyperlink{ref-shen}{2008}, pp. 552--553).
+
+\begin{quote}
+Em muitos casos, para um novo conjunto de covariantes \(x_0\), pode-se
+estar interessado em prever a variável resposta em sua escala original:
+
+\[Z_0 = e^{x_o^T\beta + \epsilon_0}\]
+
+ou estimar a média condicional da variável resposta:
+
+\[\mu(x_0)=E[Z_0|x_o] = e^{x_o^T\beta + \frac{1}{2}\sigma^2}\]
+\end{quote}
+
+De acordo com Shen e Zhu(\protect\hyperlink{ref-shen}{2008}, p. 553), se
+\(\beta\) e \(\sigma^2\) são ambos conhecidos, então é fácil demonstrar
+que o melhor estimador de \(Z_0\) é de fato \(\mu(x_0)\). Contudo, na
+prática, ambos \(\beta\) e \(\sigma^2\) são desconhecidos e precisam ser
+estimados para a obtenção de \(\mu(x_0)\).
+
+Segundo Shen e Zhu (\protect\hyperlink{ref-shen}{2008}, p. 552), existem
+na literatura diversos estimadores baseados em diversos métodos
+inferenciais, como \textbf{ML} (\emph{Maximum Likelihood Estimator}),
+\textbf{REML} (\emph{Restricted ML Estimator}), \textbf{UMVU}
+(\emph{Uniformly Minimum Variance Unbiased Estimator}), além de um
+estimador \textbf{REML} com viés corrigido.
+
+Shen e Zhu(\protect\hyperlink{ref-shen}{2008}) então propõem dois novos
+estimadores baseados na minimização do erro médio quadrático assintótico
+e do viés assintótico.
+
+\subsubsection{Regressão Linear}\label{regressao-linear-1}
+
 De acordo com Duan (\protect\hyperlink{ref-Duan}{1983}, p. 606), o Valor
 Esperado \(E\) de uma variável resposta \(Y\) que tenha sido
 transformada em valores \(\eta\) durante a regressão linear por uma
@@ -169,503 +322,260 @@ retransformação da variável transforma pela sua função inversa
 
 \[E[Y_0] = E[h(x_0\beta + \epsilon)] \ne h(x_o\beta)\]
 
-Numa regressão linear logaritmizada, ou seja, uma regressão linear com o
-logarítmo da variável dependente, para efetuar apropriadamente a
-retransformação das estimativas de volta a sua escala original,
-precisa-se ter em conta a desigualdade mencionada na seção
-\ref{esperanca-matematica-ou-valor-esperado}.
+Numa regressão log-linear, ou seja, uma regressão linear com o logaritmo
+da variável dependente (\(h(\eta) = g^{-1}(\eta) = exp(\eta)\)), para
+efetuar apropriadamente a retransformação das estimativas de volta a sua
+escala original, precisa-se ter em conta a desigualdade mencionada na
+seção \ref{esperança-matemática-ou-valor-esperado}.
 
-Segundo MANNING; MULLAHY (\protect\hyperlink{ref-NBERt0246}{1999}),
+Segundo (MANNING; MULLAHY, \protect\hyperlink{ref-NBERt0246}{1999}),
 quando ajustamos o logaritmo natural de uma variável \(Y\) contra outra
 variável \(X\) através da seguinte equação de regressão:
 
 \[ln(Y) = \beta_0 + \beta_1X + \epsilon\]
 
-Sabe-se que a melhor estimativa que se pode fazer da variável dependente
-\(Y\) é o seu Valor Esperado, que neste caso vale:
+Se o erro \(\epsilon\) é normalmente distribuído, com média zero e
+desvio padrão \(\sigma^2\), ou seja, se
+\(\epsilon \sim N(0, \sigma^2)\), então (DUAN,
+\protect\hyperlink{ref-Duan}{1983}, p. 606; MANNING; MULLAHY,
+\protect\hyperlink{ref-NBERt0246}{1999}, p. 6):
 
-\[E[Y] = e^{\beta_0 + \beta_1X} \cdot E[e^\epsilon]\]
+\[E[Y|X] = e^{\beta_0 + \beta_1X} \cdot E[e^\epsilon] \ne e^{\beta_0 + \beta_1X}\]
 
 Embora o valor esperado dos resíduos \(\epsilon\) seja igual a zero, ele
 está submetido a uma transformação não linear, de maneira que não
 podemos afirmar que \(E[e^\epsilon] = 1\), como vimos na seção anterior.
-Desta maneira, o estimador abaixo é enviesado:
+Desta maneira, o estimador abaixo, chamado em (SHEN; ZHU,
+\protect\hyperlink{ref-shen}{2008}, p. 554) de \emph{naive
+back-transform estimator}, ou simplesmente \textbf{BT} não é consistente
+e é enviesado, tendo viés multiplicativo de valor assintótico igual a
+\(e^{-\sigma^2/2}\):
 
-\[E[Y] = e^{\beta_0 + \beta_1X}\]
+\[E[Y|X] = e^{\beta_0 + \beta_1X}\]
 
-Se o termo de erro \(\epsilon\) é normalmente distribuído
+Segundo (SHEN; ZHU, \protect\hyperlink{ref-shen}{2008}, p. 554), ainda,
+o valor de \(e^{-\sigma^2/2}\) é sempre menor do que 1(SHEN; ZHU,
+\protect\hyperlink{ref-shen}{2008}, p. 554).
+
+\begin{quote}
+As a result, the BT estimator underestimates \(\mu(x_0)\), and the bias
+is large when \(\sigma^2\) is large. In our study, it appears that the
+BT estimator performs much worse than the other
+estimators{[}\ldots{}{]}Actually, the BT estimator is more suitable for
+estimating the median of Z0, which is \(exp(x_0^T\beta)\) in this case.
+\end{quote}
+
+Porém se o termo de erro \(\epsilon\) é normalmente distribuído
 \(N(0,\sigma^2)\), então um estimador não-enviesado para o valor
 esperado \(E[Y]\), de acordo com DUAN
 (\protect\hyperlink{ref-Duan}{1983}), assume a forma vista na equação
-abaixo DUAN (\protect\hyperlink{ref-Duan}{1983}; apud MANNING; MULLAHY,
-\protect\hyperlink{ref-NBERt0246}{1999}, p. 2 e 6):
+abaixo(DUAN, \protect\hyperlink{ref-Duan}{1983}, p. 606; MANNING;
+MULLAHY, \protect\hyperlink{ref-NBERt0246}{1999}, p. 2 e 6):
 
 \[E[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}\]
 
+Cabe salientar, segundo (MANNING; MULLAHY,
+\protect\hyperlink{ref-NBERt0246}{1999}, p. 6), que se o termo de erro
+não for i.i.d (independentes e identicamente distribuídos), mas for
+homoscedástico, então:
+
+\[E[Y|X]=s \times e^{X_0\beta}\] onde \(s = E[e^\epsilon]\).
+
+De qualquer maneira, o valor esperado de \(Y\) é proporcional à
+exponencial da previsão na escala log.
+
+\subsubsection{Modelos
+Heteroscedásticos}\label{modelos-heteroscedasticos}
+
+Modelos heteroscedásticos não são raros, especialmente no caso de
+variáveis envolvendo valores em moeda, sendo muito comum em modelos
+econométricos. Em sua essência, são heteroscedásticos aqueles modelos
+lineares cujo termo de erro não pode ser considerado totalmente
+independente, ou seja, existe alguma função (linear ou não), tal que
+\(E[e^\epsilon] = f(x)\), de modo que:
+
+\[log(E[Y|X]) = X\beta + log(f(x))\]
+
+É desnecessário dizer que, para estes modelos o estimador para a média é
+diferente de
+\(E[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}\), haja
+vista que \(\sigma^2\) não é mais um escalar, mas uma função.
+
+Existem diversas maneiras de se contornar este problema. Por exemplo,
+através da eliminação do viés através da utilização de uma função que
+modele a variância \(\sigma^2(X)\), ou através do estimador
+sanduíche\footnote{ver
+  \href{https://matloff.wordpress.com/2015/09/18/can-you-say-heteroscedasticity-3-times-fast/}{link}}.
+
+Cabe ainda salientar que, para os modelos heteroscedásticos, não apenas
+os erros estão comprometidos, mas também os intervalos de confiança.
+
+\subsection{\texorpdfstring{Modelo linear generalizado
+(\emph{GLM})}{Modelo linear generalizado (GLM)}}\label{modelo-linear-generalizado-glm}
+
+De acordo com (MANNING; MULLAHY,
+\protect\hyperlink{ref-NBERt0246}{1999}, pp. 3--4), um modelo linear
+generalizado com uma função de ligação logarítmica estimam
+\(log(E[Y|X])\) diretamente, de tal maneira que:
+
+\[log(E[Y|X]) = X\beta\] ou \[E[Y|X] = e^{X\beta}\]
+
+\subsection{Validação Cruzada}\label{validacao-cruzada}
+
+Validação Cruzada ou \emph{cross-validation} é uma técnica estatística
+que pode ser utilizada de diversas maneiras e consistem em dividir um
+conjunto de dados em duas partições distintas, chamados de partição de
+treino (\emph{training set}) e partição de teste(\emph{test set}),
+utilizadas para o ajuste do modelo e para a previsão da variável
+dependente, respectivamente. Os dados previstos na partição de teste são
+então comparados aos valores observados.
+
+Neste artigo efetuaremos a validação-cruzada utilizando o procedimento
+chamado de \emph{delete-one procedure}, em que se retira apenas um dado
+do conjunto de dados, ajusta-se um modelo e então utiliza-se este modelo
+para prever o valor da variável dependente para o dado retirado (SHEN;
+ZHU, \protect\hyperlink{ref-shen}{2008}, p. 564).
+
+Para cada observação então calcula-se o seu erro quadrático
+(\((Y_i - \hat{Y}_i)^2\)), utilizado para o cálculo da estatística RMSPE
+(erro de previsão médio quadrático \emph{root mean squared prediction
+error}), conforme expressão a seguir (SHEN; ZHU,
+\protect\hyperlink{ref-shen}{2008}, p. 564):
+
+\[(\frac{1}{n}\sum_{i = 1}^{n}(Y_i - \hat{Y}_i)^2)^{1/2}\]
+
 \section{ESTUDO DE CASO}\label{estudo-de-caso}
+
+Com o fim de averiguar qual estimador melhor se adequa ao procedimento
+de retransformação de variáveis, aplicar-se-á um comparativo entre os
+estimadores média, moda e mediana, através do uso da estatística RMSPE.
+
+\subsection{Dados}\label{dados}
 
 Neste estudo comparamos a precisão de diversos tipos de modelos
 estatísticos (regressão linear, regressão não-linear e modelo linear
-generalizado) sobre dados gerados com erros randômicos normais com média
-zero e desvio-padrão \(\sigma = 1\).
+generalizado) sobre os dados disponíveis em Hochheim
+(\protect\hyperlink{ref-hochheim}{2015}, pp. 21--22).
 
-\subsection{Geração de dados
-randômicos}\label{geracao-de-dados-randomicos}
+\subsection{Cálculo do RMSPE}\label{calculo-do-rmspe}
 
-Para a geração de dados foi utilizada a seguinte expressão teórica,
-dentro do intervalo \(0 \leqslant x \leqslant 1\):
+\subsubsection{Regressão linear}\label{regressao-linear-2}
 
-\[y = e^{-5x + 2}\] Para obter alguma variabilidade, foram adicionados
-aos valores teóricos de \(y\) erros normais \(N(0;0,2)\).
+Os valores ajustados com os estimadores da moda, média e mediana podem
+ser vistos na tabela abaixo:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
-
-\NormalTok{a =}\StringTok{ }\OperatorTok{-}\DecValTok{5}
-\NormalTok{b =}\StringTok{ }\DecValTok{2}
-
-\NormalTok{x =}\StringTok{ }\KeywordTok{runif}\NormalTok{(}\DecValTok{100}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
-\NormalTok{y =}\StringTok{ }\KeywordTok{exp}\NormalTok{(a}\OperatorTok{*}\NormalTok{x }\OperatorTok{+}\StringTok{ }\NormalTok{b }\OperatorTok{+}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\DecValTok{0}\NormalTok{, .}\DecValTok{2}\NormalTok{))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{itemize}
-\tightlist
-\item
-  Gráfico dos dados gerados
-\end{itemize}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{plot}\NormalTok{(x,y, }\DataTypeTok{pch =} \DecValTok{16}\NormalTok{, }\DataTypeTok{cex =} \FloatTok{0.5}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=0.7\linewidth]{images/grafico-1} 
-
-}
-
-\caption{Gráfico dos dados gerados}\label{fig:grafico}
-\end{figure}
-
-\subsubsection{Gráfico da variável
-transformada}\label{grafico-da-variavel-transformada}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{plot}\NormalTok{(x, }\KeywordTok{log}\NormalTok{(y), }\DataTypeTok{pch =} \DecValTok{16}\NormalTok{, }\DataTypeTok{cex =} \FloatTok{0.5}\NormalTok{) }
-\KeywordTok{abline}\NormalTok{(}\KeywordTok{lm}\NormalTok{(}\KeywordTok{log}\NormalTok{(y) }\OperatorTok{~}\StringTok{ }\NormalTok{x), }\DataTypeTok{col =} \DecValTok{2}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=0.7\linewidth]{images/graficotrans-1} 
-
-}
-
-\caption{Gráfico da variável transformada}\label{fig:graficotrans}
-\end{figure}
-
-\subsection{Ajuste da regressão
-não-linear}\label{ajuste-da-regressao-nao-linear}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{### NLS Fit}
-\NormalTok{NLfit <-}\StringTok{ }\KeywordTok{nls}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\KeywordTok{exp}\NormalTok{(a}\OperatorTok{*}\NormalTok{x}\OperatorTok{+}\NormalTok{b), }\DataTypeTok{start =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{a =} \OperatorTok{-}\DecValTok{10}\NormalTok{, }\DataTypeTok{b =} \DecValTok{15}\NormalTok{)) }
-\end{Highlighting}
-\end{Shaded}
-
-\subsubsection{Coeficientes}\label{coeficientes}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{co <-}\StringTok{ }\KeywordTok{coef}\NormalTok{(NLfit)}
-\NormalTok{co}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##            a            b 
-## -4.896555212  1.997874467
-\end{verbatim}
-
-\subsubsection{Gráfico do modelo
-não-linear}\label{grafico-do-modelo-nao-linear}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{f <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x,a,b) \{}\KeywordTok{exp}\NormalTok{(a}\OperatorTok{*}\NormalTok{x}\OperatorTok{+}\NormalTok{b)\}}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{f}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{a =}\NormalTok{ co[}\DecValTok{1}\NormalTok{], }\DataTypeTok{b =}\NormalTok{ co[}\DecValTok{2}\NormalTok{]), }\DataTypeTok{col =} \DecValTok{2}\NormalTok{, }\DataTypeTok{lwd =} \FloatTok{1.2}\NormalTok{) }
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{f}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{a =} \OperatorTok{-}\DecValTok{5}\NormalTok{, }\DataTypeTok{b =} \DecValTok{2}\NormalTok{), }\DataTypeTok{col =} \DecValTok{3}\NormalTok{, }\DataTypeTok{lwd =} \FloatTok{1.5}\NormalTok{, }\DataTypeTok{add =} \OtherTok{TRUE}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=0.7\linewidth]{images/graficoNL-1} 
-
-}
-
-\caption{Gráfico do modelo não-linear}\label{fig:graficoNL}
-\end{figure}
-
-\subsubsection{Estimativas do modelo
-não-linear}\label{estimativas-do-modelo-nao-linear}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{pNLfit <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(NLfit, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{))}
-\NormalTok{pNLfit}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 0.2393773308
-\end{verbatim}
-
-O valor teórico obtido pela equação original (\(y = e^{-5x + 2}\)) é de:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{Yteorico <-}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\DecValTok{5}\OperatorTok{*}\NormalTok{.}\DecValTok{7} \OperatorTok{+}\StringTok{ }\DecValTok{2}\NormalTok{)}
-\KeywordTok{round}\NormalTok{(Yteorico, }\DecValTok{4}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 0.2231
-\end{verbatim}
-
-\[\epsilon = \frac{\hat{Y} - Y_{teórico}}{Y_{teórico}}\]
-
-O valor obtido pelo modelo é muito próximo do valor teórico. O erro do
-modelo, portanto, é de 7.28\%.
-
-\subsection{Ajuste de modelo linear
-generalizado}\label{ajuste-de-modelo-linear-generalizado}
-
-\subsubsection{Poisson}\label{poisson}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{Gfit <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\NormalTok{x, }\DataTypeTok{family =} \KeywordTok{poisson}\NormalTok{())}
-\KeywordTok{summary}\NormalTok{(Gfit)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 
-## Call:
-## glm(formula = y ~ x, family = poisson())
-## 
-## Deviance Residuals: 
-##         Min           1Q       Median           3Q          Max  
-## -0.78105080  -0.11407910  -0.02334406   0.04517457   0.78120241  
-## 
-## Coefficients:
-##               Estimate Std. Error   z value   Pr(>|z|)    
-## (Intercept)  2.0129853  0.1265714  15.90394 < 2.22e-16 ***
-## x           -4.9957447  0.4647721 -10.74881 < 2.22e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for poisson family taken to be 1)
-## 
-##     Null deviance: 184.288851  on 99  degrees of freedom
-## Residual deviance:   4.991623  on 98  degrees of freedom
-## AIC: Inf
-## 
-## Number of Fisher Scoring iterations: 4
-\end{verbatim}
-
-\paragraph{Estimativa com o modelo linear generalizado com
-Poisson}\label{estimativa-com-o-modelo-linear-generalizado-com-poisson}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{pGfit <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(Gfit, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{), }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
-\NormalTok{pGfit}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##            1 
-## 0.2267207901
-\end{verbatim}
-
-O valor obtido pelo modelo também é muito próximo do valor teórico
-obtido pela equação original (\(y = e^{-5x + 2}\)). Neste caso, o erro
-do modelo é de 1.61\%.
-
-\subsubsection{Gauss}\label{gauss}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{Gfit2 <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\NormalTok{x, }\DataTypeTok{family =} \KeywordTok{gaussian}\NormalTok{(}\DataTypeTok{link =} \StringTok{"log"}\NormalTok{))}
-\KeywordTok{summary}\NormalTok{(Gfit2)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 
-## Call:
-## glm(formula = y ~ x, family = gaussian(link = "log"))
-## 
-## Deviance Residuals: 
-##         Min           1Q       Median           3Q          Max  
-## -1.52566206  -0.10270628  -0.01630332   0.02118162   2.06949483  
-## 
-## Coefficients:
-##               Estimate Std. Error   t value   Pr(>|t|)    
-## (Intercept)  1.9978743  0.0268358  74.44810 < 2.22e-16 ***
-## x           -4.8965539  0.1736556 -28.19692 < 2.22e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for gaussian family taken to be 0.1633725569)
-## 
-##     Null deviance: 313.906827  on 99  degrees of freedom
-## Residual deviance:  16.010526  on 98  degrees of freedom
-## AIC: 106.59533
-## 
-## Number of Fisher Scoring iterations: 4
-\end{verbatim}
-
-\paragraph{Estimativa com o modelo linear generalizado com
-Gauss}\label{estimativa-com-o-modelo-linear-generalizado-com-gauss}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{pGfit2 <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(Gfit2, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{), }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
-\NormalTok{pGfit2}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##            1 
-## 0.2393775107
-\end{verbatim}
-
-O valor obtido pelo modelo também é muito próximo do valor teórico
-obtido pela equação original (\(y = e^{-5x + 2}\)). Neste caso, o erro
-do modelo é de 7.28\%. Observar que a adoção de ajuste por modelo linear
-generalizado com família gaussiana e \emph{log-link} é equivalente ao
-ajustamento de um modelo de regressão não-linear, como visto na seção
-anterior.
-
-\subsection{Ajuste de Regressão Linear com variável dependente
-transformada}\label{ajuste-de-regressao-linear-com-variavel-dependente-transformada}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{### LM Fit}
-\NormalTok{fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{log}\NormalTok{(y) }\OperatorTok{~}\StringTok{ }\NormalTok{x)}
-\NormalTok{s <-}\StringTok{ }\KeywordTok{summary}\NormalTok{(fit)}
-\NormalTok{s}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = log(y) ~ x)
-## 
-## Residuals:
-##         Min          1Q      Median          3Q         Max 
-## -0.44759471 -0.12264594 -0.00394687  0.11926677  0.44344532 
-## 
-## Coefficients:
-##                Estimate  Std. Error   t value   Pr(>|t|)    
-## (Intercept)  1.99820803  0.03921100  50.96040 < 2.22e-16 ***
-## x           -5.01796627  0.06836424 -73.40045 < 2.22e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.1938582 on 98 degrees of freedom
-## Multiple R-squared:  0.9821351,  Adjusted R-squared:  0.9819528 
-## F-statistic: 5387.626 on 1 and 98 DF,  p-value: < 2.2204e-16
-\end{verbatim}
-
-\subsubsection{Gráfico do modelo linear}\label{grafico-do-modelo-linear}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{#plotmod(fit)}
-\end{Highlighting}
-\end{Shaded}
-
-\subsubsection{Estimativas}\label{estimativas}
-
-\begin{enumerate}
-\def\labelenumi{\alph{enumi}.}
-\tightlist
-\item
-  Pela mediana
-\end{enumerate}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{Y <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{))}
-\NormalTok{p_mediana <-}\StringTok{ }\KeywordTok{exp}\NormalTok{(Y)}
-\NormalTok{p_mediana}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##            1 
-## 0.2199470683
-\end{verbatim}
-
-O erro do modelo, neste caso, é de -1.43\%.
-
-\begin{enumerate}
-\def\labelenumi{\alph{enumi}.}
-\setcounter{enumi}{1}
-\tightlist
-\item
-  Pela moda
-\end{enumerate}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p_moda <-}\StringTok{ }\KeywordTok{exp}\NormalTok{(Y }\OperatorTok{-}\StringTok{ }\NormalTok{s}\OperatorTok{$}\NormalTok{sigma}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
-\NormalTok{p_moda}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##            1 
-## 0.2118346261
-\end{verbatim}
-
-O erro do modelo, neste caso, é de -5.06\%.
-
-\begin{enumerate}
-\def\labelenumi{\alph{enumi}.}
-\setcounter{enumi}{2}
-\tightlist
-\item
-  Pela média
-\end{enumerate}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p_media <-}\StringTok{ }\KeywordTok{exp}\NormalTok{(Y }\OperatorTok{+}\StringTok{ }\NormalTok{s}\OperatorTok{$}\NormalTok{sigma}\OperatorTok{^}\DecValTok{2}\OperatorTok{/}\DecValTok{2}\NormalTok{)}
-\NormalTok{p_media}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##            1 
-## 0.2241190594
-\end{verbatim}
-
-O erro do modelo, neste caso, é de 0.443\%.
-
-\subsection{Comparação dos resultados
-obtidos}\label{comparacao-dos-resultados-obtidos}
-
-\begin{longtable}[]{@{}lrr@{}}
+\begin{longtable}[]{@{}lrrrr@{}}
 \toprule
-Modelo & Previsão & Erro (\%)\tabularnewline
+& Y & Média & Mediana & Moda\tabularnewline
 \midrule
 \endhead
-\textbf{Valor Teórico} & \textbf{0.2231} & ------\tabularnewline
-Regressão Não-Linear & 0.2394 & 7.28\%\tabularnewline
-GLM (Poisson) & 0.2267 & 1.61\%\tabularnewline
-GLM (Gauss) & 0.2394 & 7.28\%\tabularnewline
-LM (Mediana) & 0.2199 & -1.43\%\tabularnewline
-LM (Moda) & 0.2118 & -5.06\%\tabularnewline
-LM (Média) & 0.2241 & 0.443\%\tabularnewline
+AP\_1 & 1.060.000 & 1.029.765 & 1.020.713 & 1.002.846\tabularnewline
+AP\_2 & 510.000 & 628.132 & 622.610 & 611.712\tabularnewline
+AP\_3 & 780.000 & 855.052 & 847.535 & 832.700\tabularnewline
+AP\_4 & 550.000 & 736.956 & 730.478 & 717.691\tabularnewline
+AP\_5 & 850.000 & 1.011.300 & 1.002.410 & 984.863\tabularnewline
+AP\_6 & 300.000 & 358.594 & 355.441 & 349.220\tabularnewline
+AP\_7 & 750.000 & 724.106 & 717.741 & 705.177\tabularnewline
+AP\_8 & 650.000 & 657.475 & 651.695 & 640.288\tabularnewline
+AP\_9 & 620.000 & 658.389 & 652.601 & 641.177\tabularnewline
+AP\_10 & 740.000 & 662.002 & 656.182 & 644.696\tabularnewline
+AP\_11 & 770.000 & 818.933 & 811.734 & 797.525\tabularnewline
+AP\_12 & 680.000 & 702.573 & 696.397 & 684.207\tabularnewline
+AP\_13 & 850.000 & 681.544 & 675.553 & 663.728\tabularnewline
+AP\_14 & 420.000 & 551.781 & 546.931 & 537.357\tabularnewline
+AP\_15 & 547.000 & 673.810 & 667.887 & 656.196\tabularnewline
+AP\_16 & 1.600.000 & 1.413.047 & 1.400.625 & 1.376.108\tabularnewline
+AP\_17 & 1.320.000 & 1.115.664 & 1.105.857 & 1.086.499\tabularnewline
+AP\_18 & 615.000 & 645.338 & 639.665 & 628.468\tabularnewline
+AP\_19 & 705.000 & 722.736 & 716.383 & 703.843\tabularnewline
+AP\_20 & 418.000 & 435.824 & 431.993 & 424.431\tabularnewline
+AP\_21 & 270.000 & 243.440 & 241.300 & 237.077\tabularnewline
+AP\_22 & 418.000 & 485.426 & 481.159 & 472.736\tabularnewline
+AP\_23 & 650.000 & 630.016 & 624.478 & 613.547\tabularnewline
+AP\_24 & 700.000 & 774.614 & 767.805 & 754.365\tabularnewline
+AP\_25 & 680.000 & 729.864 & 723.448 & 710.784\tabularnewline
+AP\_26 & 420.000 & 350.336 & 347.256 & 341.178\tabularnewline
+AP\_27 & 195.000 & 229.411 & 227.394 & 223.414\tabularnewline
+AP\_28 & 290.000 & 279.686 & 277.228 & 272.375\tabularnewline
+AP\_29 & 272.000 & 246.194 & 244.030 & 239.758\tabularnewline
+AP\_30 & 430.000 & 399.634 & 396.121 & 389.187\tabularnewline
+AP\_31 & 895.000 & 615.032 & 609.625 & 598.954\tabularnewline
+AP\_32 & 450.000 & 454.828 & 450.830 & 442.938\tabularnewline
+AP\_33 & 1.950.000 & 1.474.903 & 1.461.938 & 1.436.347\tabularnewline
+AP\_34 & 2.150.000 & 2.597.848 & 2.575.011 & 2.529.937\tabularnewline
+AP\_35 & 940.000 & 969.142 & 960.623 & 943.808\tabularnewline
+AP\_36 & 1.400.000 & 1.334.839 & 1.323.105 & 1.299.945\tabularnewline
+AP\_37 & 1.090.000 & 1.002.811 & 993.996 & 976.596\tabularnewline
+AP\_38 & 1.272.000 & 999.341 & 990.556 & 973.217\tabularnewline
+AP\_39 & 2.800.000 & 1.921.706 & 1.904.812 & 1.871.470\tabularnewline
+AP\_40 & 1.796.000 & 2.075.621 & 2.057.374 & 2.021.361\tabularnewline
+AP\_41 & 1.400.000 & 1.398.114 & 1.385.824 & 1.361.566\tabularnewline
+AP\_42 & 3.000.000 & 3.306.637 & 3.277.569 & 3.220.197\tabularnewline
+AP\_43 & 1.200.000 & 1.062.442 & 1.053.103 & 1.034.669\tabularnewline
+AP\_44 & 800.000 & 646.536 & 640.853 & 629.635\tabularnewline
+AP\_45 & 950.000 & 668.014 & 662.142 & 650.551\tabularnewline
+AP\_46 & 2.061.000 & 2.267.978 & 2.248.041 & 2.208.690\tabularnewline
+AP\_47 & 1.326.000 & 1.575.944 & 1.562.090 & 1.534.746\tabularnewline
+AP\_48 & 850.000 & 776.375 & 769.550 & 756.079\tabularnewline
+AP\_49 & 1.650.000 & 1.509.488 & 1.496.218 & 1.470.028\tabularnewline
+AP\_50 & 650.000 & 834.750 & 827.412 & 812.929\tabularnewline
 \bottomrule
 \end{longtable}
 
-\section{Método de Monte-Carlo}\label{metodo-de-monte-carlo}
+Os valores encontrados para o erro de predição médio quadrático para
+cada estimador foram: 203.939,11 para a média, 204.006,84 para a mediana
+e 205.537,36 para a moda.
 
-O resultados acima não devem ser interpretados como taxativos, pois os
-valores encontrados foram obtidos de dados gerados randômicamente.
+Como esperado, o RMSPE foi menor para a média, e maior para a moda. O
+que comprova a teoria, já que o \emph{naive estimator} é enviesado com
+viés conhecido de \(-\sigma^2/2\), logo a média possui viés de
+\(-1,5\sigma^2\).
 
-Para uma comparação mais precisa entre os modelos testados, utilizamos o
-método de Monte Carlo, simulando os dados randomicamente a cada
-iteração. Finalmente, comparamos o valor médio obtido por cada cada
-modelo ao valor téorico.
+\subsubsection{Modelo linear
+generalizado}\label{modelo-linear-generalizado}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{Nsim <-}\StringTok{ }\DecValTok{500}
-\NormalTok{pNL <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\DataTypeTok{mode =} \StringTok{"numeric"}\NormalTok{, }\DataTypeTok{length =}\NormalTok{ Nsim)}
-\NormalTok{pG <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\DataTypeTok{mode =} \StringTok{"numeric"}\NormalTok{, }\DataTypeTok{length =}\NormalTok{ Nsim)}
-\NormalTok{pG2 <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\DataTypeTok{mode =} \StringTok{"numeric"}\NormalTok{, }\DataTypeTok{length =}\NormalTok{ Nsim)}
-\NormalTok{p_mediana <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\DataTypeTok{mode =} \StringTok{"numeric"}\NormalTok{, }\DataTypeTok{length =}\NormalTok{ Nsim)}
-\NormalTok{p_moda <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\DataTypeTok{mode =} \StringTok{"numeric"}\NormalTok{, }\DataTypeTok{length =}\NormalTok{ Nsim)}
-\NormalTok{p_media <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\DataTypeTok{mode =} \StringTok{"numeric"}\NormalTok{, }\DataTypeTok{length =}\NormalTok{ Nsim)}
-\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{Nsim) \{}
-\NormalTok{  y =}\StringTok{ }\KeywordTok{exp}\NormalTok{(a}\OperatorTok{*}\NormalTok{x }\OperatorTok{+}\StringTok{ }\NormalTok{b }\OperatorTok{+}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\DecValTok{0}\NormalTok{, .}\DecValTok{2}\NormalTok{))}
-\NormalTok{  NLfit <-}\StringTok{ }\KeywordTok{nls}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\KeywordTok{exp}\NormalTok{(a}\OperatorTok{*}\NormalTok{x}\OperatorTok{+}\NormalTok{b), }\DataTypeTok{start =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{a =} \OperatorTok{-}\DecValTok{10}\NormalTok{, }\DataTypeTok{b =} \DecValTok{15}\NormalTok{)) }
-\NormalTok{  Gfit <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\NormalTok{x, }\DataTypeTok{family =} \KeywordTok{poisson}\NormalTok{())}
-\NormalTok{  Gfit2 <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\NormalTok{x, }\DataTypeTok{family =} \KeywordTok{gaussian}\NormalTok{(}\DataTypeTok{link =} \StringTok{"log"}\NormalTok{))}
-\NormalTok{  fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{log}\NormalTok{(y) }\OperatorTok{~}\StringTok{ }\NormalTok{x)}
-\NormalTok{  s <-}\StringTok{ }\KeywordTok{summary}\NormalTok{(fit)}
-\NormalTok{  pNL[i] <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(NLfit, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{))}
-\NormalTok{  pG[i] <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(Gfit, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{), }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
-\NormalTok{  pG2[i] <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(Gfit2, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{), }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
-\NormalTok{  p_mediana[i] <-}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{)))}
-\NormalTok{  p_moda[i] <-}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{)) }\OperatorTok{-}\StringTok{ }\NormalTok{s}\OperatorTok{$}\NormalTok{sigma}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
-\NormalTok{  p_media[i] <-}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{newdata =} \KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ .}\DecValTok{7}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\NormalTok{s}\OperatorTok{$}\NormalTok{sigma}\OperatorTok{^}\DecValTok{2}\OperatorTok{/}\DecValTok{2}\NormalTok{)}
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
+\section{CONCLUSÃO}\label{conclusao}
 
-\begin{itemize}
-\tightlist
-\item
-  Gráficos
-\end{itemize}
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=1\linewidth]{images/histogramas-1} 
-
-}
-
-\caption{Histogramas das variáveis simuladas}\label{fig:histogramas}
-\end{figure}
-
-\begin{longtable}[]{@{}lrrr@{}}
-\toprule
-Modelo & Previsão & \(\sigma^2\) & Erro\tabularnewline
-\midrule
-\endhead
-\textbf{Valor Teórico} & \textbf{0.2231} & ------ &
-------\tabularnewline
-Regressão Não-Linear & 0.2275 & 0.0389 & 1.96\%\tabularnewline
-GLM (Poisson) & 0.2279 & 0.0111 & 2.16\%\tabularnewline
-GLM (Gauss) & 0.2275 & 0.0389 & 1.96\%\tabularnewline
-LM (Mediana) & 0.2236 & 0.0052 & 0.207\%\tabularnewline
-LM (Moda) & 0.2148 & 0.0052 & -3.72\%\tabularnewline
-LM (Média) & 0.2281 & 0.0053 & 2.23\%\tabularnewline
-\bottomrule
-\end{longtable}
+Como vimos na seção \ref{sec:revisao-bibliografica}, o método clássico
+de regressão linear é uma minimização do erro médio quadrático de
+predição e a função de regressão \(\hat{m}_{Y;X}\) é uma equação para a
+\emph{média} da população \(Y\). Considerando que são satisfeitas as
+hipóteses que
 
 \section*{REFERÊNCIAS}\label{referencias}
 \addcontentsline{toc}{section}{REFERÊNCIAS}
 
 \hypertarget{refs}{}
+\hypertarget{ref-NBR1465302}{}
+ABNT. \textbf{NBR 14653-2: Avaliação de bens -- parte 2: Imóveis
+urbanos}. Rio de Janeiro: Associação Brasileira de Normas Técnicas,
+2011.
+
 \hypertarget{ref-Duan}{}
 DUAN, N. Smearing estimate: A nonparametric retransformation method.
 \textbf{Journal of the American Statistical Association}, v. 78, n. 383,
 p. 605--610, 1983. Taylor \& Francis. Disponível em:
 \textless{}\url{http://www.tandfonline.com/doi/abs/10.1080/01621459.1983.10478017}\textgreater{}..
 
+\hypertarget{ref-hochheim}{}
+HOCHHEIM, N. \textbf{Engenharia de avaliações - módulo básico}.
+Florianópolis: IBAPE - SC, 2015.
+
 \hypertarget{ref-NBERt0246}{}
 MANNING, W. G.; MULLAHY, J. \textbf{Estimating log models: To transform
 or not to transform?} Working Paper, National Bureau of Economic
 Research, 1999.
+
+\hypertarget{ref-matloff2009}{}
+MATLOFF, N. S. \textbf{From algorithms to z-scores: Probabilistic and
+statistical modeling in computer science}. Davis, California: Orange
+Grove Books, 2009.
+
+\hypertarget{ref-shen}{}
+SHEN, H.; ZHU, Z. Efficient mean estimation in log-normal linear models.
+\textbf{Journal of Statistical Planning and Inference}, v. 138, p.
+552--567, 2008. Elsevier. Disponível em:
+\textless{}\url{https://www.unc.edu/~haipeng/publication/emplnM1.pdf}\textgreater{}..
 
 \hypertarget{ref-wiki:E}{}
 WIKIPEDIA. Valor esperado --- Wikipedia, the free encyclopedia., 2018.
