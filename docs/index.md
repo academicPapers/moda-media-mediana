@@ -12,7 +12,7 @@ VIII Simpósio da SOBREA
 * [Willian Zonato](https://github.com/willzonato)
 
 
-Para ler o artigo em HTML [clique aqui.](./Artigo.html)
+Para ler o artigo em HTML [clique aqui.](https://github.com/lfpdroubi/moda-media-mediana/blob/master/Artigo.md)
 
 Para ler o artigo em PDF [clique aqui.](https://github.com/lfpdroubi/moda-media-mediana/blob/master/Artigo.pdf)
 
@@ -25,4 +25,4 @@ Para ver a apresentação [clique aqui.](./apresentacao.html)
 - [ ] Aprovado
 - [ ] Selecionado para apresentação
 
-Florianópolis, 13 de abril de 2018.
+Florianópolis, 27 de abril de 2018.
