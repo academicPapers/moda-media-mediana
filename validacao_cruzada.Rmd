@@ -1,0 +1,70 @@
+---
+title: "Validação Cruzada"
+author: "Luiz Fernando Palin Droubi"
+date: "27 de abril de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(appraiseR)
+library(dplyr)
+```
+
+# Dados
+
+```{r}
+dados <- na.omit(centro_2015@data)
+outliers <- c(31, 39)
+```
+
+# Validação Cruzada
+
+## Mediana
+
+```{r}
+p <- vector(mode = "numeric", length = dim(dados)[1])
+spe <- vector(mode = "numeric", length = dim(dados)[1])
+for (i in seq_len(dim(dados)[1])) {
+  df <- dados[-c(outliers), ]
+  fit <- lm(log(valor) ~ area_total + quartos + suites + garagens + dist_b_mar + padrao, data = df)
+  s <- summary(fit)
+  p[i] <- exp(predict(fit, newdata = dados[i, ]))
+  spe[i] <- (pull(dados[i, "valor"]) - p[i])^2
+}
+RMSPE <- sqrt(mean(spe))
+RMSPE
+```
+
+## Média
+
+```{r}
+p1 <- vector(mode = "numeric", length = dim(dados)[1])
+spe1 <- vector(mode = "numeric", length = dim(dados)[1])
+for (i in seq_len(dim(dados)[1])) {
+  df <- dados[-c(outliers), ]
+  fit1 <- lm(log(valor) ~ area_total + quartos + suites + garagens + dist_b_mar + padrao, data = df)
+  s1 <- summary(fit)
+  p1[i] <- exp(predict(fit1, newdata = dados[i, ]) + .5*s1$sigma^2)
+  spe1[i] <- (pull(dados[i, "valor"]) - p1[i])^2
+}
+RMSPE1 <- sqrt(mean(spe1))
+RMSPE1
+```
+
+## Moda
+
+```{r}
+p2 <- vector(mode = "numeric", length = dim(dados)[1])
+spe2 <- vector(mode = "numeric", length = dim(dados)[1])
+for (i in seq_len(dim(dados)[1])) {
+  df <- dados[-c(outliers), ]
+  fit2 <- lm(log(valor) ~ area_total + quartos + suites + garagens + dist_b_mar + padrao, data = df)
+  s2 <- summary(fit)
+  p2[i] <- exp(predict(fit2, newdata = dados[i, ]) - s2$sigma^2)
+  spe2[i] <- (pull(dados[i, "valor"]) - p2[i])^2
+}
+RMSPE2 <- sqrt(mean(spe2))
+RMSPE2
+```
+

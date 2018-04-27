@@ -1,0 +1,358 @@
+---
+title: "random"
+author: "Luiz Fernando Palin Droubi"
+date: "27 de abril de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Geração de dados randômicos
+
+Para a geração de dados foi utilizada a seguinte expressão teórica, dentro do intervalo $0 \leqslant x \leqslant  1$:
+
+$$y = e^{-5x + 2}$$
+Para obter alguma variabilidade, foram adicionados aos valores teóricos de $y$ erros normais $N(0;0,2)$.
+
+```{r dados}
+set.seed(123)
+Nsim <- params$Nsim
+
+a = -5
+b = 2
+
+x = runif(Nsim, 0, 1)
+y = exp(a*x + b + rnorm(Nsim, 0, .1))
+
+df <- data.frame(Y = y, X = x)
+#df <- read_excel("amostra.xlsx")
+```
+
+
+### Gráficos dos dados gerados
+
+#### Sem transformação de escala
+
+* Diagrama de dispersão
+
+Nota-se na figura \ref{fig:grafico} que o modelo de regressão linear entre as variáveis sem qualquer transformação (reta verde) não é satisfatório, haja vista que os dados não apresentam correlação linear.
+
+```{r grafico, fig.cap = "Gráfico de dispersão dos dados gerados"}
+scatterplot(Y ~ X, data = df, pch = 16, cex = 0.5, smooth = FALSE)
+```
+
+* Histograma
+
+Na figura \ref{fig:histograma} nota-se que os dados gerados para a variável resposta $Y$ tem distribuição aproximadamente log-normal.
+
+```{r histograma, fig.cap = "Histograma da variável $Y$",fig.keep='last'}
+histogram(~ Y, data = df)
+plotDist("lnorm", 
+         meanlog = mean(log(df$Y), na.rm = TRUE),
+         sdlog = sd(log(df$Y), na.rm = TRUE), 
+         add = TRUE)
+```
+
+
+#### Com transformação de escala
+
+* Diagrama de Dispersão
+
+Já o gráfico de dispersão da variável transformada (figura \ref{fig:graficotrans}) mostra claramente que a reta de regressão é bem ajustada para os dados.
+
+```{r graficotrans, fig.cap = "Gráfico da variável transformada", fig.keep='last'}
+scatterplot(log(y)~x, pch = 16, cex = 0.5, smooth = FALSE) 
+```
+
+* Histograma
+
+Finalmente, o histograma da variável transformada é aproximadamente normal , como podemos ver na figura \ref{fig:histogramatrans}
+
+```{r histogramatrans, fig.cap = "Histograma da variável transformada $log(Y)$", fig.keep='last'}
+histogram(~ log(Y), data = df, breaks = 30, type = "density")
+plotDist("norm", 
+         mean = mean(log(df$Y), na.rm = TRUE),
+         sd = sd(log(df$Y), na.rm = TRUE), 
+         add = TRUE)
+```
+
+## Ajuste da regressão não-linear
+
+```{r nls}
+### NLS Fit
+NLfit <- nls(y ~ exp(a*x+b), start = c(a = -10, b = 15)) 
+```
+
+### Coeficientes
+
+```{r coef}
+co <- coef(NLfit)
+co
+```
+
+### Gráfico do modelo não-linear
+
+```{r graficoNL, fig.cap = "Gráfico do modelo não-linear"}
+f <- function(x,a,b) {exp(a*x+b)}
+curve(f(x = x, a = co[1], b = co[2]), col = 2, lwd = 1.2) 
+curve(f(x = x, a = -5, b = 2), col = 3, lwd = 1.5, add = TRUE)
+```
+
+### Estimativas do modelo não-linear
+
+```{r}
+pNLfit <- predict(NLfit, newdata = data.frame(x = .7))
+pNLfit
+```
+
+O valor teórico obtido pela equação original ($y = e^{-5x + 2}$) é de:
+
+```{r}
+Yteorico <- exp(-5*.7 + 2)
+round(Yteorico, 4)
+```
+
+$$\epsilon = \frac{\hat{Y} - Y_{teórico}}{Y_{teórico}}$$
+
+O valor obtido pelo modelo é muito próximo do valor teórico. O erro do modelo, portanto, é de `r porcento((pNLfit - Yteorico)/Yteorico)`.
+
+## Ajuste de modelo linear generalizado
+
+### Poisson
+
+```{r glm}
+Gfit <- glm(y ~ x, family = poisson())
+summary(Gfit)
+```
+
+#### Estimativa com o modelo linear generalizado com Poisson
+
+```{r}
+pGfit <- predict(Gfit, newdata = data.frame(x = .7), type = "response")
+pGfit
+```
+
+O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de `r porcento((pGfit - Yteorico)/Yteorico)`.
+
+### Gauss
+
+```{r glm2}
+Gfit2 <- glm(y ~ x, family = gaussian(link = "log"))
+summary(Gfit2)
+```
+
+#### Estimativa com o modelo linear generalizado com Gauss
+
+```{r}
+pGfit2 <- predict(Gfit2, newdata = data.frame(x = .7), type = "response")
+pGfit2
+```
+
+O valor obtido pelo modelo também é muito próximo do valor teórico obtido pela equação original ($y = e^{-5x + 2}$). Neste caso, o erro do modelo é de `r porcento((pGfit2 - Yteorico)/Yteorico)`. Observar que a adoção de ajuste por modelo linear generalizado com família gaussiana e *log-link* é equivalente ao ajustamento de um modelo de regressão não-linear, como visto na seção anterior.
+
+## Ajuste de Regressão Linear com variável dependente transformada
+
+```{r lm}
+### LM Fit
+fit <- lm(log(Y) ~ X, data = df)
+s <- summary(fit)
+s
+```
+
+### Verificação da normalidade
+
+#### Teste de Shapiro-Wilk
+
+```{r}
+shapiro.test(fit$residuals)
+```
+
+#### Histograma dos resíduos
+
+```{r histres, fig.cap = "Histograma dos resíduos da regressão linear"}
+res <- data.frame(fit$residuals)
+ggplot(res, aes(x = fit.residuals)) +
+  geom_histogram(aes(y = ..density..), bins = 8) +
+  stat_density(geom = "line", aes(colour = "Kernel")) +
+  stat_function(fun = dnorm,
+                args = list(mean = mean(fit$residuals), sd = sd(fit$residuals)), 
+                aes(colour = "Normal")) + 
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        legend.text = element_text(size = 8))
+```
+#### Normal QQ com intervalo de confiança
+
+```{r qqplot, fig.cap="Gráfico Normal QQ com intervalos de confiança"}
+qqPlot(fit$residuals, pch = 16)
+```
+
+Das figuras \ref{fig:histres} e \ref{fig:qqplot} demonstra-se que o modelo de regressão possui resíduos em distribuição normal, como também atesta o teste de Shapiro-Wilk.
+
+### Gráfico do modelo linear
+
+```{r graficoFIT, fig.cap = "Gráfico do modelo linear"}
+grid <- seq(min(df[,"X"], na.rm = TRUE), max(df[,"X"], na.rm = TRUE), length = 101)
+new <- data.frame(X = grid)
+pred <- predict(fit, newdata = new, interval = "confidence", level = 0.80)
+data <- cbind(new, inverse(pred, func = "log"))
+data <- melt(data, id.vars = "X", measure.vars = c("fit", "lwr", "upr"))
+p <- ggplot(data = data, aes(x = X, y = value, colour = variable)) +
+  geom_line() + ylab("Y") +
+  theme(legend.position="bottom") 
+p
+```
+
+
+### Estimativas
+
+a. Pela mediana
+
+```{r mediana}
+Y <- predict(fit, newdata = data.frame(X = .7))
+p_mediana <- exp(Y)
+p_mediana
+```
+
+O erro do modelo, neste caso, é de `r porcento((p_mediana - Yteorico)/Yteorico)`.
+
+b. Pela moda
+
+```{r moda}
+p_moda <- exp(Y - s$sigma^2)
+p_moda
+```
+
+O erro do modelo, neste caso, é de `r porcento((p_moda - Yteorico)/Yteorico)`.
+
+c. Pela média
+
+```{r media}
+p_media <- exp(Y + s$sigma^2/2)
+p_media
+```
+
+O erro do modelo, neste caso, é de `r porcento((p_media - Yteorico)/Yteorico)`.
+
+## Comparação dos resultados obtidos
+
+| Modelo                | Previsão                    | Erro (%)                                    | 
+|:----------------------|----------------------------:|--------------------------------------------:|
+| **Valor Teórico**     | **`r round(Yteorico, 4)`**  | ------                                      |
+| Regressão Não-Linear  | `r round(pNLfit, 4)`        |`r porcento((pNLfit-Yteorico)/Yteorico)`     |
+| GLM (Poisson)         | `r round(pGfit, 4)`         |`r porcento((pGfit-Yteorico)/Yteorico)`      |
+| GLM (Gauss)           | `r round(pGfit2, 4)`        |`r porcento((pGfit2-Yteorico)/Yteorico)`     |
+| LM (Mediana)          | `r round(p_mediana, 4)`     |`r porcento((p_mediana-Yteorico)/Yteorico)`  |
+| LM (Moda)             | `r round(p_moda, 4)`        |`r porcento((p_moda-Yteorico)/Yteorico)`     |
+| LM (Média)            | `r round(p_media, 4)`       |`r porcento((p_media-Yteorico)/Yteorico)`    |
+
+# Método de Monte-Carlo
+
+O resultados acima não devem ser interpretados como taxativos, pois os valores encontrados foram obtidos de dados gerados randomicamente e em único ponto.
+
+Para uma comparação mais precisa entre os modelos testados, utilizamos o método de Monte Carlo em conjunto com a técnica de validação cruzada, simulando os modelos em apenas parte dos dados (*training set*) e fazendo previsões dos dados na outra partição (*test set*).
+
+Para este caso, vamos dividir randomicamente os dados em duas partições iguais, ou seja, os modelos serão gerados em cima de metade dos dados (*training set*) e as predições serão efetuadas e comparadas aos 50% de dados restantes (*test set*).
+
+## Simulações
+
+```{r, cache = TRUE}
+pNL <- list()
+pG <- list()
+pG2 <- list()
+p_mediana <- list()
+p_moda <- list()
+p_media <- list()
+ASPE_pNL <- vector(mode = "numeric", length = Nsim)
+ASPE_pG <- vector(mode = "numeric", length = Nsim)
+ASPE_pG2 <- vector(mode = "numeric", length = Nsim)
+ASPE_mediana <- vector(mode = "numeric", length = Nsim)
+ASPE_moda <- vector(mode = "numeric", length = Nsim)
+ASPE_media <- vector(mode = "numeric", length = Nsim)
+for (i in seq_len(Nsim)) {
+  subset <- sample(Nsim, Nsim/2, replace = FALSE)
+  trainingset <- df[subset, ]  
+  testset <-  df[-subset, ]
+  NLfit <- nls(Y ~ exp(a*X + b), data = trainingset, start = c(a = -10, b = 15)) 
+  Gfit <- glm(Y ~ X, family = poisson(), data = trainingset)
+  Gfit2 <- glm(Y ~ X, family = gaussian(link = "log"), data = trainingset)
+  fit <- lm(log(Y) ~ X, data = trainingset)
+  s <- summary(fit)
+  pNL[[i]] <- predict(NLfit, newdata = testset)
+  pG[[i]] <- predict(NLfit, newdata = testset, type = "response")
+  pG2[[i]] <- predict(NLfit, newdata = testset, type = "response")
+  p <- predict(fit, newdata = testset)
+  p_mediana[[i]] <- exp(p)
+  p_moda[[i]] <- exp(p - s$sigma^2)
+  p_media[[i]] <- exp(p + .5*s$sigma^2)
+  ASPE_pNL[i] <- sum((pNL[[i]] - testset)^2)
+  ASPE_pG[i] <- sum((pG[[i]] - testset)^2)
+  ASPE_pG2[i] <- sum((pG2[[i]] - testset)^2)
+  ASPE_mediana[i] <- sum((p_mediana[[i]] - testset)^2)
+  ASPE_moda[i] <- sum((p_moda[[i]] - testset)^2)
+  ASPE_media[i] <- sum((p_media[[i]] - testset)^2)
+}
+mean(ASPE_pNL)
+mean(ASPE_pG)
+mean(ASPE_pG2)
+mean(ASPE_mediana)
+mean(ASPE_moda)
+mean(ASPE_media)
+```
+
+## Gráficos
+
+```{r histogramas, out.width="100%", echo = FALSE, message=FALSE, fig.cap = "Histogramas das variáveis simuladas"}
+data <- data.frame(ASPE_pNL, ASPE_pG, ASPE_pG2, ASPE_mediana, ASPE_moda, ASPE_media)
+p <- list()
+p[[1]] <- ggplot(data, aes(x = ASPE_pNL), breaks = 10) + 
+  geom_histogram(aes(y = ..density..)) + 
+  stat_density(geom = "line", aes(colour = "Kernel")) +
+  stat_function(fun = dnorm,
+                args = list(mean = mean(data$ASPE_pNL), sd = sd(data$ASPE_pNL)), 
+                aes(colour = "Normal")) + 
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        legend.text = element_text(size = 8))
+p[[2]] <- ggplot(data, aes(x = ASPE_pG), breaks = 10) + 
+  geom_histogram(aes(y = ..density..)) + 
+  stat_density(geom = "line", aes(colour = "Kernel")) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(data$ASPE_pG), sd = sd(data$ASPE_pG)), 
+                aes(colour = "Normal")) + 
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        legend.text = element_text(size = 8))
+p[[3]] <- ggplot(data, aes(x = ASPE_pG2), breaks = 10) + 
+  geom_histogram(aes(y = ..density..)) + 
+  stat_density(geom = "line", aes(colour = "Kernel")) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(data$ASPE_pG2), sd = sd(data$ASPE_pG2)), 
+                aes(colour = "Normal")) + 
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        legend.text = element_text(size = 8))
+p[[4]] <- ggplot(data, aes(x = ASPE_mediana), breaks = 10) + 
+  geom_histogram(aes(y = ..density..)) + 
+  stat_density(geom = "line", aes(colour = "Kernel")) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(data$ASPE_mediana), sd = sd(data$ASPE_mediana)), 
+                aes(colour = "Normal")) + 
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        legend.text = element_text(size = 8))
+p[[5]] <- ggplot(data, aes(x = ASPE_moda), breaks = 10) + 
+  geom_histogram(aes(y = ..density..)) + 
+  stat_density(geom = "line", aes(colour = "Kernel")) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(data$ASPE_moda), sd = sd(data$ASPE_moda)), 
+                aes(colour = "Normal")) + 
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        legend.text = element_text(size = 8))
+p[[6]] <- ggplot(data, aes(x = ASPE_media), breaks = 10) + 
+  geom_histogram(aes(y = ..density..)) + 
+  stat_density(geom = "line", aes(colour = "Kernel")) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(data$ASPE_media), sd = sd(data$ASPE_media)), 
+                aes(colour = "Normal")) + 
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        legend.text = element_text(size = 8))
+cowplot::plot_grid(plotlist = p, ncol = 3)
+```
