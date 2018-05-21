@@ -4,7 +4,7 @@ author:
 - Luiz Fernando Palin Droubi^[SPU/SC, luiz.droubi@planejamento.gov.br]
 - Norberto Hochheim^[UFSC, hochheim@gmail.com]
 - Willian Zonato^[SPU/SC, willian.zonato@planejamento.gov.br]
-date: "27/04/2018"
+date: "03/05/2018"
 output:
   html_document:
     fig_caption: yes
@@ -56,8 +56,12 @@ $$e(x) = \hat{\theta}(x) - \theta$$
 
 #### Erro médio quadrático
 
-$$MSE = E[\hat{\theta}(X) - \theta]$$
+Segundo Shen e Zhu [-@shen, 553], o erro médio quadrático é uma medida comum da qualidade de um estimador na literatura estatística.
 
+$$MSE = E[\hat{\theta}(X) - \theta]$$
+Numa regressão linear, o erro médio quadrático pode ser descrito por:
+
+$$MSE[\hat{\mu}(x_0)] = E[\hat{\mu}(x_0) - \mu(x_0)]^2 = \text{Var}[\hat{\mu}(x_0)] + \text{Bias}^2[\hat{\mu}(x_0)]$$
 #### Desvio
 
 $$d(x) = \hat{\theta}(x) - E(\hat{\theta}(X))$$
@@ -73,6 +77,10 @@ $$B(\hat{\theta}) = E(\hat{\theta}) - \theta$$
 
 O viés coincide com o valor esperado do erro, pois $E(\hat{\theta}) - \theta = E(\hat{\theta}-\theta)$.
 
+Numa regressão linear:
+
+$$B[\hat{\mu}(x_0)] = E[\hat{\mu}(x_0)] - \mu(x_0)$$
+
 #### Consistência
 
 $$\lim_{n \rightarrow \infty}\hat{\theta} = \theta$$
@@ -80,6 +88,10 @@ $$\lim_{n \rightarrow \infty}\hat{\theta} = \theta$$
 ## Melhor estimador linear não-inviesado ou BLUE (Best Linear Unbiased Estimator)
 
 Em estatística, é comum o uso da sigla BLUE para indicar o melhor estimador linear não-enviesado.
+
+## Tradeoff entre viés e variância
+
+
 
 ## Regressão linear
 
@@ -89,7 +101,9 @@ Sejam Y e X duas variáveis e $m_{Y;X}(t)$ uma função tal que:
 
 $$m_{Y;X}(t) = E(Y|X = t)$$
 
-Chamamos $m_{Y;X}$ de **função de regressão de $Y$ dado $X$** [@matloff2009, 386, grifo do autor]. Em geral, $m_{Y;X}(t)$ é a **média** da de $Y$ para todas as unidades da população para as quais $X = t$ [@matloff2009, 386, grifo nosso].
+Chamamos $m_{Y;X}$ de **função de regressão de $Y$ dado $X$** [@matloff2009, 386, grifo do autor]. Em geral, $m_{Y;X}(t)$ é a **média** de $Y$ para todas as unidades da população para as quais $X = t$ [@matloff2009, 386, grifo nosso].
+
+> The word "regression" is an allusion to the famous comment of Sir Francis Galton in the late 1800s regarding "regression toward the mean." This referred to the fact that tall parents tend to have children who are less tall closer to the mean -- with a similar statement for short parents. The predictor variable here might be, say, the father's height F, with the response variable being, say, the son's height S. Galton was saying that $E(S|F) < F$.
 
 Segundo Matloff [-@matloff2009, 386, grifo do autor], ainda, a função $m_{Y;X}(t)$ é uma função da **população**, ou seja, apenas **estimamos** uma equação de regressão ($\hat{m}_{Y;X}(t)$) à partir de uma amostra da população.
 
@@ -104,6 +118,10 @@ Notando que o termo **regressão linear** não necessariamente significa que o g
 ## Estimação em modelos de regressão paramétricos
 
 Segundo Matloff [-@matloff2009, 389], é possível demonstrar que o mínimo valor da quantidade $E[(Y - g(X))^2]$ [^2] é obtido, entre todas as outras funções, para $g(X) = m_{Y;X}(X)$. Porém, "se pretendemos minimizar o erro médio absoluto de predição, $E(|Y - g(X)|)$ , a melhor função seria a mediana $g(Y) = mediana(Y|X)$." [@matloff2009, 389].
+
+Matloff [-@matloff2009] aqui está se referindo à um outro tipo de regressão, chamada de regressão quantílica, mais especificamente, à regressão à mediana, ou seja, ao quantil de 50%.
+
+
 
 [^2]: Erro médio quadrático de predição
 
@@ -139,7 +157,22 @@ De acordo com Shen e Zhu[-@shen, 553], se $\beta$ e $\sigma^2$ são ambos conhec
 
 Segundo Shen e Zhu [-@shen, 552], existem na literatura diversos estimadores baseados em diversos métodos inferenciais, como **ML** (*Maximum Likelihood  Estimator*), **REML** (*Restricted ML Estimator*), **UMVU** (*Uniformly Minimum Variance Unbiased Estimator*), além de um estimador **REML** com viés corrigido.
 
-Shen e Zhu[-@shen] então propõem dois novos estimadores baseados na minimização do erro médio quadrático assintótico e do viés assintótico.
+Na prática, estes estimadores pertencem a uma classe de estimadores definida na expressão abaixo:
+
+$$\begin{Bmatrix}
+\hat{\mu_c}(x_0):\hat{\mu_c}(x_0) = exp(x_0^T\hat{\beta} + cRSS/2), c = \frac{1}{n-a}, a<n
+\end{Bmatrix}$$
+
+Shen e Zhu[-@shen] então propõem dois novos estimadores baseados na minimização do erro médio quadrático assintótico ($MM$) e do viés assintótico ($MB$).
+
+De maneira que a diferença entre os estimadores supra-citados pode ser resumida ao parâmetro $a$:
+
+$a_{ML}=0$
+$a_{REML}=p+1$
+$a_{MM}=p − 1 − 3nv_0 − 3RSS/(2m)$
+$a_{MB}=p + 1 − nv0 − RSS/(2m).$
+
+
 
 ### Regressão Linear
 
@@ -289,11 +322,65 @@ Os valores ajustados com os estimadores da moda, média e mediana podem ser vist
 
 Os valores encontrados para o erro de predição médio quadrático para cada estimador foram: 203.939,11 para a média, 204.006,84 para a mediana e 205.537,36 para a moda.
 
-Como esperado, o RMSPE foi menor para a média, e maior para a moda. O que comprova a teoria, já que o *naive estimator* é enviesado com viés conhecido de $-\sigma^2/2$, logo a média possui viés de $-1,5\sigma^2$.
+Como esperado, o RMSPE foi menor para a média, e maior para a moda. O que comprova a teoria, já que o *naive estimator* é enviesado com viés conhecido de $-\sigma^2/2$, logo a moda possui viés de $-1,5\sigma^2$.
 
 \newpage
 
-### Modelo linear generalizado
+## Cálculo do erro médio absoluto
+
+### Regressão quantílica à mediana
+
+
+```
+## 
+## % Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+## % Date and time: qui, mai 03, 2018 - 10:53:35
+## \begin{table}[!htbp] \centering 
+##   \caption{} 
+##   \label{} 
+## \begin{tabular}{@{\extracolsep{5pt}}lcc} 
+## \\[-1.8ex]\hline 
+## \hline \\[-1.8ex] 
+##  & \multicolumn{2}{c}{\textit{Dependent variable:}} \\ 
+## \cline{2-3} 
+## \\[-1.8ex] & \multicolumn{2}{c}{log(valor)} \\ 
+## \\[-1.8ex] & \textit{OLS} & \textit{quantile} \\ 
+##  & \textit{} & \textit{regression} \\ 
+## \\[-1.8ex] & (1) & (2)\\ 
+## \hline \\[-1.8ex] 
+##  area\_total & 0.002$^{***}$ & 0.002$^{**}$ \\ 
+##   & (0.0003) & (0.001) \\ 
+##   & & \\ 
+##  quartos & 0.163$^{***}$ & 0.162$^{***}$ \\ 
+##   & (0.039) & (0.043) \\ 
+##   & & \\ 
+##  suites & 0.080$^{**}$ & 0.080$^{*}$ \\ 
+##   & (0.037) & (0.047) \\ 
+##   & & \\ 
+##  garagens & 0.190$^{***}$ & 0.152$^{**}$ \\ 
+##   & (0.037) & (0.061) \\ 
+##   & & \\ 
+##  log(dist\_b\_mar) & $-$0.128$^{***}$ & $-$0.146$^{***}$ \\ 
+##   & (0.031) & (0.050) \\ 
+##   & & \\ 
+##  I(padrao$\hat{\mkern6mu}$-1) & $-$0.553$^{***}$ & $-$0.459$^{***}$ \\ 
+##   & (0.119) & (0.149) \\ 
+##   & & \\ 
+##  Constant & 13.483$^{***}$ & 13.574$^{***}$ \\ 
+##   & (0.260) & (0.370) \\ 
+##   & & \\ 
+## \hline \\[-1.8ex] 
+## Observations & 50 & 50 \\ 
+## R$^{2}$ & 0.946 &  \\ 
+## Adjusted R$^{2}$ & 0.939 &  \\ 
+## Residual Std. Error & 0.154 (df = 43) &  \\ 
+## F Statistic & 125.679$^{***}$ (df = 6; 43) &  \\ 
+## \hline 
+## \hline \\[-1.8ex] 
+## \textit{Note:}  & \multicolumn{2}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+## \end{tabular} 
+## \end{table}
+```
 
 # CONCLUSÃO
 
