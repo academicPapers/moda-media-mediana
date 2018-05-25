@@ -85,7 +85,7 @@
   \postauthor{\par}
   \predate{\centering\large\emph}
   \postdate{\par}
-  \date{21/05/2018}
+  \date{25/05/2018}
 
 \usepackage[brazil]{babel}
 \usepackage{graphicx}
@@ -134,7 +134,8 @@ formação de valores, dependendo do método utilizado.
 Major Point 1: When we talk about the relationship of one variable to
 one or more others, we are referring to the regression function, which
 expresses the mean of the first variable as a function of the others.
-The key word here is \emph{mean}! {[}matloff2009, 386, grifo do autor{]}
+The key word here is \emph{mean}! (MATLOFF,
+\protect\hyperlink{ref-matloff2009}{2009}, p. 386, grifo do autor)
 \end{quote}
 
 Tem que se levar em conta que a equação de regressão linear não é uma
@@ -159,7 +160,7 @@ escrever:
 vista que o valor esperado para o termo de erro \(\epsilon\) é zero.
 
 No entanto, quando a variável dependente \(Y\) é transformada, este
-termo de erro desprezado nas equação de regressão acima é de suma
+termo de erro desprezado na equação de regressão acima é de suma
 importância para o computo do valor esperado da variável original, como
 veremos neste artigo, pois ele determina a equação de estimação da
 variável original. Por exemplo, no caso que aqui nos interessa, que é o
@@ -174,7 +175,7 @@ O fundamental a se perceber aqui é que, quando há transformação da
 variável dependente, para voltarmos à variável original, temos que levar
 em conta o termo de erro, haja vista que uma propriedade do valor
 esperado é a de que \(E[f(X)] \ne f(E[X])\), como veremos a seguir. Mais
-precisamente, como veremos, pela desigualdade de Jensen,
+precisamente, para funções convexas, pela desigualdade de Jensen,
 \(f(E[X]) \leq E[(f(x)]\). Isto implica que o valor esperado da
 exponencial do termo de erro que precisamos estimar é maior do que a
 exponencial do valor esperado do erro, ou seja,

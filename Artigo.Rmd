@@ -11,6 +11,7 @@ output:
       in_header: preamble.tex
     keep_tex: yes
     number_sections: yes
+  word_document: default
   html_document:
     fig_caption: yes
     keep_md: yes
@@ -18,10 +19,10 @@ classoption: a4paper
 documentclass: article
 link-citations: yes
 csl: ABNT_UFPR_2011-Mendeley.csl
-subtitle: Teoria e simulações
-bibliography: bibliography.bib
 params:
   Nsim: 500
+subtitle: Teoria e simulações
+bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -68,7 +69,7 @@ Existe na área da avaliação de imóveis uma discussão frequente e indesejáv
 
 Pretende-se com este artigo dar a este problema de uma abordagem formal. Entendemos que a norma brasileira [@NBR1465302] deveria tratar este assunto de maneira clara, especificando qual estimador deveria ser utilizado para a formação de valores, dependendo do método utilizado.
 
-> Major Point 1: When we talk about the relationship of one variable to one or more others, we are referring to the regression function, which expresses the mean of the first variable as a function of the others. The key word here is *mean*! [matloff2009, 386, grifo do autor]
+> Major Point 1: When we talk about the relationship of one variable to one or more others, we are referring to the regression function, which expresses the mean of the first variable as a function of the others. The key word here is *mean*! [@matloff2009, 386, grifo do autor]
 
 Tem que se levar em conta que a equação de regressão linear não é uma equação determinística, mas probabilística. No dia-a-dia da prática de engenharia de avaliações, assim como em outras áreas, no entanto, a equação de regressão é usualmente escrita simplificadamente, sem o termo de erro $\epsilon$, ou seja, a equação de regressão é escrita como uma equação determinística, da forma:
 
@@ -80,14 +81,14 @@ Num modelo onde não há a adoção de qualquer transformação para a variável
 $$E[Y|X] = E[\alpha + X\beta] + E[\epsilon] = \alpha + X\beta$$
 Haja vista que o valor esperado para o termo de erro $\epsilon$ é zero.
 
-No entanto, quando a variável dependente $Y$ é transformada, este termo de erro desprezado nas equação de regressão acima é de suma importância para o computo do valor esperado da variável original, como veremos neste artigo, pois ele determina a equação de estimação da variável original. Por exemplo, no caso que aqui nos interessa, que é o da transformação logarítmica da variável dependente, temos:
+No entanto, quando a variável dependente $Y$ é transformada, este termo de erro desprezado na equação de regressão acima é de suma importância para o computo do valor esperado da variável original, como veremos neste artigo, pois ele determina a equação de estimação da variável original. Por exemplo, no caso que aqui nos interessa, que é o da transformação logarítmica da variável dependente, temos:
 
 $$log(Y) = \alpha + X\beta + \epsilon \Leftrightarrow$$
 $$Y = \exp(\alpha + X\beta)\exp(\epsilon) \Leftrightarrow$$
 $$E[Y|X] = E[\exp(\alpha + X\beta)]E[\exp(\epsilon)|X] \Leftrightarrow$$
 $$E[Y|X] = \exp(\alpha + X\beta)E[\exp(\epsilon)|X]$$
 
-O fundamental a se perceber aqui é que, quando há transformação da variável dependente, para voltarmos à variável original, temos que levar em conta o termo de erro, haja vista que uma propriedade do valor esperado é a de que $E[f(X)] \ne f(E[X])$, como veremos a seguir. Mais precisamente, como veremos, pela desigualdade de Jensen, $f(E[X]) \leq E[(f(x)]$. Isto implica que o valor esperado da exponencial do termo de erro que precisamos estimar é maior do que a exponencial do valor esperado do erro, ou seja, $E[\exp(\epsilon)|X] \geq \exp(E[\epsilon|X]) = 1$. 
+O fundamental a se perceber aqui é que, quando há transformação da variável dependente, para voltarmos à variável original, temos que levar em conta o termo de erro, haja vista que uma propriedade do valor esperado é a de que $E[f(X)] \ne f(E[X])$, como veremos a seguir. Mais precisamente, para funções convexas, pela desigualdade de Jensen, $f(E[X]) \leq E[(f(x)]$. Isto implica que o valor esperado da exponencial do termo de erro que precisamos estimar é maior do que a exponencial do valor esperado do erro, ou seja, $E[\exp(\epsilon)|X] \geq \exp(E[\epsilon|X]) = 1$. 
 
 # REVISÃO BIBLIOGRÁFICA
 
