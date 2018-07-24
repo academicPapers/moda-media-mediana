@@ -356,3 +356,20 @@ p[[6]] <- ggplot(data, aes(x = ASPE_media), breaks = 10) +
         legend.text = element_text(size = 8))
 cowplot::plot_grid(plotlist = p, ncol = 3)
 ```
+
+  | Modelo                |Previsão                     |$\sigma^2$                  |Erro                   |
+  |:----------------------|----------------------------:|---------------------------:|----------------------:|
+  | **Valor Teórico**     |**`r round(Yteorico, 4)`**   |------                      |------                 |
+  | Regressão Não-Linear  |`r round(mean(pNL), 4)`      |`r round(sd(pNL), 4)`       |`r porcento((mean(pNL)-Yteorico)/Yteorico)`       |
+  | GLM (Poisson)         |`r round(mean(pG), 4)`       |`r round(sd(pG), 4)`        |`r porcento((mean(pG)-Yteorico)/Yteorico)`        |
+  | GLM (Gauss)           |`r round(mean(pG2), 4)`      |`r round(sd(pG2), 4)`       |`r porcento((mean(pG2)-Yteorico)/Yteorico)`       |
+  | LM (Mediana)          |`r round(mean(p_mediana), 4)`|`r round(sd(p_mediana), 4)` |`r porcento((mean(p_mediana)-Yteorico)/Yteorico)` |
+  | LM (Moda)             |`r round(mean(p_moda), 4)`   |`r round(sd(p_moda), 4)`    |`r porcento((mean(p_moda)-Yteorico)/Yteorico)`    |
+  | LM (Média)            |`r round(mean(p_media), 4)`  |`r round(sd(p_media), 4)`   |`r porcento((mean(p_media)-Yteorico)/Yteorico)`   |
+  
+  ## Modelo linear generalizado (*GLM*)
+  
+  De acordo com [@NBERt0246, 3-4], um modelo linear generalizado com uma função de ligação logarítmica estimam $log(E[Y|X])$ diretamente, de tal maneira que:
+  
+  $$log(E[Y|X]) = X\beta$$ ou
+  $$E[Y|X] = e^{X\beta}$$

@@ -10,17 +10,21 @@ output:
     includes:
       in_header: preamble.tex
     keep_tex: yes
+    latex_engine: xelatex
     number_sections: yes
+    toc: no
   word_document: default
   html_document:
     fig_caption: yes
     keep_md: yes
-classoption: a4paper
+classoption: a4paper, 12pt
 documentclass: article
+geometry: left=3.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm
 link-citations: yes
+linkcolor: red
+urlcolor: magenta
+citecolor: green
 csl: ABNT_UFPR_2011-Mendeley.csl
-params:
-  Nsim: 500
 subtitle: Teoria e simulações
 bibliography: bibliography.bib
 ---
@@ -63,78 +67,110 @@ theme_set(theme_few())
 
 # INTRODUÇÃO
 
-Existe na área da avaliação de imóveis uma discussão frequente e indesejável a respeito da adoção da estimativa de tendência central adotada para a predição de valores quando da utilização de modelos lineares log-normais, isto é, modelos em que a variável resposta aparece transformada pela função logaritmo natural.[^1]
+Existe na área da avaliação de imóveis uma discussão frequente e a nosso ver indesejável a respeito da adoção da estimativa de tendência central adotada para a predição de valores quando da utilização de modelos lineares log-normais, isto é, modelos em que a variável resposta aparece transformada pela função logaritmo natural.
 
-[^1]: Neste artigo esta função é representada por $log$.
+Como veremos oportunamente, quando um modelo linear log-normal estiver razoavelmente bem-ajustado, com um baixo erro-padrão, a adoção de qualquer estimativas de tendência central, moda, média ou mediana, resultará em valores praticamente equivalentes.
 
-Pretende-se com este artigo dar a este problema de uma abordagem formal. Entendemos que a norma brasileira [@NBR1465302] deveria tratar este assunto de maneira clara, especificando qual estimador deveria ser utilizado para a formação de valores, dependendo do método utilizado.
+No entanto, na presença de grande dispersão dos dados, os valores do erro-padrão da regressão linear pode se tornar relativamente alto, e a diferença entre as avaliação por uma ou outra medida de tendência central pode tornar-se relevante, levando a uma situação altamente indesejável: um imóvel poderá ser "corretamente" avaliado por dois avaliadores independentes com uma diferença significativa entre elas, haja vista que a NBR14.653-02 [-@NBR1465302] se omite a este respeito.
+
+Pretende-se com este artigo dar a este problema uma abordagem formal, com o intuito de sugerir uma padronização das avaliações, sem no entanto especificar qual medida de tendência central é a correta, haja vista que todas elas tem seus prós e contras e nenhuma delas pode ser dita melhor do que a outra.
+
+Como veremos adiante, no entanto, a escolha da utilização de uma ou outra medida deveria ser prévia à escolha do método, pois propiciaria assim a escolha de um método mais adequado à previsão daquela medida.
+
+O avaliador, por exemplo, pode entender que a medida de tendência central mais adequada é a mediana, haja vista que esta é sensivelmente menos afetada pela presença de eventuais *outliers* no conjunto de dados. Sugeriríamos, neste caso, a adoção da técnica da regressão à mediana, método muito bem fundamentado, tal qual a regressão linear clássica e disponível em vários *software* estatísticos.
+
+Porém, adotado o método da regressão linear clássica, entendemos que a escolha do estimador deveria sempre ser a média, haja vista que o método de regressão linear é, por definição (como veremos oportunamente), uma regressão *à média* da variável dependente.
+
+Ou seja, a escolha apropriada do método para a realização da avaliação poderia até ficar a cargo do avaliador (ou a cargo do contratante), mas dado o método, entendemos que caberia à NBR14.653-02 especificar o estimador adequado.
+
+# DESENVOLVIMENTO E FUNDAMENTAÇÃO
 
 > Major Point 1: When we talk about the relationship of one variable to one or more others, we are referring to the regression function, which expresses the mean of the first variable as a function of the others. The key word here is *mean*! [@matloff2009, 386, grifo do autor]
 
-Tem que se levar em conta que a equação de regressão linear não é uma equação determinística, mas probabilística. No dia-a-dia da prática de engenharia de avaliações, assim como em outras áreas, no entanto, a equação de regressão é usualmente escrita simplificadamente, sem o termo de erro $\epsilon$, ou seja, a equação de regressão é escrita como uma equação determinística, da forma:
+## Valor Esperado
 
-$$Y = \alpha + X\beta$$
-A equação acima é uma simplificação da equação de regressão, haja vista que ela presume que as hipóteses clássicas da regressão linear são atendidas, entre elas, a hipótese que os erros são normais e tem média zero ($\epsilon \sim N(0, \sigma^2)$). 
+Segundo @bennett, a **esperança matemática** ou **valor esperado ** de uma variável aleatória é a soma do produto de cada probabilidade de saída da experiência pelo seu respectivo valor. Isto é, representa o valor médio 'esperado' de uma experiência se ela for repetida muitas vezes. Matematicamente, a Esperança de uma variável aleatória $X$ é representada pelo símbolo $\mathbb{E}(X)$
 
-Num modelo onde não há a adoção de qualquer transformação para a variável dependente, verificada a hipótese da normalidade, esta equação de regressão é também a equação de estimação da variável $Y$, ou seja, para uma equação de regressão sem transformação de variáveis, pode-se escrever:
+Segundo Matloff [-@matloff2009, 42], o valor esperado tem um papel central em probabilidade e estatística. A definição mais ampla de valor esperado de uma variável aleatória $X$, válida tanto para variáveis discretas como contínuas, é:
 
-$$E[Y|X] = E[\alpha + X\beta] + E[\epsilon] = \alpha + X\beta$$
-Haja vista que o valor esperado para o termo de erro $\epsilon$ é zero.
+$$\lim_{n \to \infty} = \frac{X_1 + \ldots + X_n}{n}$$
 
-No entanto, quando a variável dependente $Y$ é transformada, este termo de erro desprezado na equação de regressão acima é de suma importância para o computo do valor esperado da variável original, como veremos neste artigo, pois ele determina a equação de estimação da variável original. Por exemplo, no caso que aqui nos interessa, que é o da transformação logarítmica da variável dependente, temos:
+### Cômputo do Valor Esperado de uma variável aleatória discreta
 
-$$log(Y) = \alpha + X\beta + \epsilon \Leftrightarrow$$
-$$Y = \exp(\alpha + X\beta)\exp(\epsilon) \Leftrightarrow$$
-$$E[Y|X] = E[\exp(\alpha + X\beta)]E[\exp(\epsilon)|X] \Leftrightarrow$$
-$$E[Y|X] = \exp(\alpha + X\beta)E[\exp(\epsilon)|X]$$
+Segundo Matloff [-@matloff2009, 44], o valor esperado de uma variável aleatória $X$ que assume valores definidos no conjunto $A$ é:
 
-O fundamental a se perceber aqui é que, quando há transformação da variável dependente, para voltarmos à variável original, temos que levar em conta o termo de erro, haja vista que uma propriedade do valor esperado é a de que $E[f(X)] \ne f(E[X])$, como veremos a seguir. Mais precisamente, para funções convexas, pela desigualdade de Jensen, $f(E[X]) \leq E[(f(x)]$. Isto implica que o valor esperado da exponencial do termo de erro que precisamos estimar é maior do que a exponencial do valor esperado do erro, ou seja, $E[\exp(\epsilon)|X] \geq \exp(E[\epsilon|X]) = 1$. 
+$$\mathbb{E}(X) = \sum_{c \in A}cP(X=c)$$
 
-# REVISÃO BIBLIOGRÁFICA
+### Cômputo do Valor Esperado de uma variável aleatória contínua
 
-## A avaliação pela moda
+O Valor Esperado de uma variável aleatória contínua $W$ pode ser escrito da seguinte forma [@matloff2009, 128]
 
-@giannakos faz uma crítica à avaliação pela moda da distribuição lognormal, crítica esta muito bem elaborada e da qual não discordamos no todo. Porém, o mesmo trabalho faz também uma defesa a nosso ver injustificada da utilização da estimativa pela mediana desta distribuição. Concordamos com @giannakos que a moda não é o valor mais provável, contudo, a nosso ver, pelo motivo que **o valor mais provável é o Valor Esperado** da variável, ou seja, o seu valor médio, como veremos.
-
-Mesmo em @giannakos, encontra-se que "a média aritmética é o 'valor esperado' da variável". No entanto, a nosso ver @giannakos não analisou apropriadamente este valor esperado e suas propriedades, assim como determiná-lo apropriadamente no caso da transformação de variáveis em modelos de regressão linear.
-
-Segundo Giannakos e Leão [-@giannakos, 5], a média:
-
-> introduz, na regressão linear, como fator de decisão, as características da função dita "originária", não-linear, transformada em logarítmica precisamente para alcançar linearidade; viola os pressupostos do método de mínimos quadrados, fundamento da regressão, ou, alternativamente, equivale a adulterar a amostra original, multiplicando, no caso presente, todos os seus valores por 1,04968. Além disto, substitui, arbitrariamente, o componente aleatório da avaliação por valor determinado, que distorce o resultado visado. Finalmente, onde a moda subestima o valor dos quocientes Y/Yc, a média o superestima, embora em escala menos pronunciada. Aliás, nunca é demais repetir, a razão principal para rejeitar toda e qualquer tentativa de avaliar seja “pela Moda”, “pela Média” ou “pela Mediana” está na interpretação implícita, de que se estaria avaliando a variável Y ou os quocientes Y/Yc, quando, na realidade, está-se lidando tão somente com a variável W (ver equação 1), sem qualquer preocupação com sua origem ou "paternidade".
-
-Pretendemos demonstrar com este artigo que esta abordagem está equivocada e que, à partir do modelo de regressão linear obtido pelo métodos dos mínimos quadrados, a estimativa adequada seria a justamente a estimava pela média da distribuição, como veremos a seguir.
-
-## Esperança matemática ou Valor Esperado
-
-Segundo @bennett, a **esperança matemática** ou **valor esperado ** de uma variável aleatória é a soma do produto de cada probabilidade de saída da experiência pelo seu respectivo valor. Isto é, representa o valor médio 'esperado' de uma experiência se ela for repetida muitas vezes. Matematicamente, a Esperança de uma variável aleatória $X$ é representada pelo símbolo $E(X)$, de tal forma que, pela definição dada acima, no caso de uma variável aleatória discreta:
-
-$$E(X) = \sum_{i = 1}^{\infty}x_ip(x_i)$$
-
-Já para uma variável aleatória contínua $x$, o valor esperado ou o valor médio de $x$ torna-se:
-
-$$E(X) = \int_{-\infty}^{\infty}xf_Y(x)dx$$
+$$\mathbb{E}(W) = \int_{-\infty}^{\infty}tf_W(t)dt$$
 
 onde $f_Y(x)$ é a função densidade de probabilidade de $x$.
 
-### Propriedades
+### Propriedades do Valor Esperado
 
-Sejam $a$ e $b$ dois escalares [@bennett, 6]:
+Seja $a$ um escalar e $U$ uma variável aleatória [@matloff2017, 47]:
 
-$E(aX + b) = aE(X) + b$ e $E[az(X) + b] = aE[z(X)] + b.$
+$$\mathbb{E}(aU) = a\mathbb{E}(U)$$
 
-Seja $X$ e $Y$ duas variáveis aleatórias independentes $X$ e $Y$, então:
+Sejam $a$ e $b$ dois escalares e $U$ e $V$ duas variáveis aleatórias, não necessariamente independentes, então:
 
-$E(XY) = E(X)E(Y)$
+$$\mathbb{E}(aU + bV) = a\mathbb{E}(U) + bE(V)$$
 
-Porém, se $X$ e $Y$ não forem independentes, esta propriedade falha (covariância).
+Finalmente, sejam $U$ e $V$ duas variáveis aleatórias *independentes*:
 
-### Desigualdade de Jensen
+$$\mathbb{E}(UV) = \mathbb{E}(U)\mathbb{E}(V)$$
+
+Porém, se $U$ e $V$ não forem independentes, esta propriedade falha (covariância).
+
+### Lei da expectativa total
+
+[@matloff2009, 339]
+
+$$\mathbb{E}(Y) = \mathbb{E}[\mathbb{E}(Y|W)]$$
+
+### Lei da Variância total
+
+[@matloff2009, 345]
+
+$$\text{Var}(Y) = \mathbb{E}[\text{Var}(Y|W)] + \text{Var}[\mathbb{E}(Y|W)]$$
+
+## Desigualdade de Jensen
 
 Segundo , seja $\varphi(x)$ uma função convexa, então:
 
-$\varphi \left(\operatorname {E} [X]\right)\leq \operatorname {E} \left[\varphi (X)\right].$
+$\varphi \left(\mathbb{E} [X]\right)\leq \mathbb{E} \left[\varphi (X)\right].$
 
 Como pode-se demonstrar, a função $e^x$ é uma função convexa, pois possui derivada segunda sempre maior que zero (${f}''=e^x>0$).
+
+### Erro médio quadrático (MSE)
+
+Seja $\pi$ o valor de uma estimativa. Então o seu erro médio quadrático (MSE) é dado por:
+
+$$\text{MSE} = \int(y - \pi)f(y)dy\\
+= \mathbb{E}[(y-\pi)^2]\\
+= \mathbb{E}(y^2)-2\pi \mathbb{E}(y)+\pi^2$$
+
+Para encontrar o valor mínimo do erro médio quadrático (MSE) quando $\pi$ varia, fazemos:
+
+$$\frac{d(\mathbb{E}(y^2)-2\pi \mathbb{E}(y)+\pi^2)}{d\pi} = 0\\
+\therefore \pi = \mathbb{E}(y)$$
+
+Ou seja, a estimativa pelo valor esperado é a estimativa que minimiza e erro médio quadrático.
+
+
+### Valor Esperado condicional
+
+O valor esperado de uma variável aleatória $y$ estatísticamente relacionada com outra outra variável aleatória $x$ é:
+
+$$\mathbb{E}(y|x) = \int{y} \frac{f(x,y)}{f(x)}dy$$
+
+onde:
+
+* $f(x,y)$ é a função densidade da distribuição de probabilidade conjunta de $x$ e $y$ e
+* $f(x) = \int{f(x,y)dy}$ é a função de distribuição de probabilidade condicional de $x$.
 
 ## Estimadores
 
@@ -144,38 +180,50 @@ A definição de um *estimador* para um parâmetro ou uma variável $\theta$ é 
 
 ### Propriedades de um estimador
 
+Nesta seção adotamos que $\hat{\theta}$ é um estimador da variável aleatória $\theta$.
+
 #### Erro
 
 $$e(x) = \hat{\theta}(x) - \theta$$
 
 #### Desvio
 
-$$d(x) = \hat{\theta}(x) - E(\hat{\theta}(X))$$
-onde $E(\hat{\theta}(X))$ é o Valor Esperado do estimador.
+$$d(x) = \hat{\theta}(x) - \mathbb{E}(\hat{\theta}(X))$$
+onde $\mathbb{E}(\hat{\theta}(X))$ é o Valor Esperado do estimador.
 
 #### Variância
 
-$$\text{Var}(\hat{\theta}) = E[(\hat{\theta} - E(\hat{\theta})^2]$$
+A variância de um estimador $\theta$ é [@matloff2009, 52]:
+
+$$\text{Var}(\hat{\theta}) = \mathbb{E}[(\hat{\theta} - \mathbb{E}[\hat{\theta}])^2]$$
+
+#### Coeficiente de Variação
+
+O coeficiente de variação de um estimador é uma medida admensional que compara o desvio-padrão de uma variável ou estimador $\theta$ à sua média, conforme abaixo [@matloff2009, 56]:
+
+$$CV = \frac{\sqrt{\text{Var}(\hat{\theta})}}{E[\hat{\theta}]}$$
 
 #### Viés
 
-$$B(\hat{\theta}) = E(\hat{\theta}) - \theta$$
+O viés de um estimador $\hat{\theta}$ é [@matloff2009, 317]:
 
-O viés coincide com o valor esperado do erro, pois $E(\hat{\theta}) - \theta = E(\hat{\theta}-\theta)$.
+$$\text{B}(\hat{\theta}) = \mathbb{E}[\hat{\theta}] - \theta$$
+
+O viés coincide com o valor esperado do erro, pois $\mathbb{E}(\hat{\theta}) - \theta = \mathbb{E}(\hat{\theta}-\theta)$.
 
 Numa regressão linear:
 
-$$B[\hat{\mu}(x_0)] = E[\hat{\mu}(x_0)] - \mu(x_0)$$
+$$\text{B}[\hat{\mu}(x_0)] = \mathbb{E}[\hat{\mu}(x_0)] - \mu(x_0)$$
 
 #### Erro médio quadrático
 
 Segundo Shen e Zhu [-@shen, 553], o erro médio quadrático é uma medida comum da qualidade de um estimador na literatura estatística.
 
-$$MSE = E[\hat{\theta}(X) - \theta]$$
+$$\text{MSE} = \mathbb{E}[(\hat{\theta} - \theta)^2]$$
 
 Numa regressão linear, o erro médio quadrático pode ser descrito por:
 
-$$MSE[\hat{\mu}(x_0)] = E[\hat{\mu}(x_0) - \mu(x_0)]^2 = \text{Var}[\hat{\mu}(x_0)] + \text{B}^2[\hat{\mu}(x_0)]$$
+$$\text{MSE}[\hat{\mu}(x_0)] = \mathbb{E}[\hat{\mu}(x_0) - \mu(x_0)]^2 = \text{Var}[\hat{\mu}(x_0)] + \text{B}^2[\hat{\mu}(x_0)]$$
 
 #### Consistência
 
@@ -187,19 +235,46 @@ Em estatística, é comum o uso da sigla BLUE (*Best Linear Unbiased Estimator*)
 
 ### Tradeoff entre viés e variância
 
+Um dos problemas conhecidos dos modelos de regressão linear ou outros modelos estatísticos em geral é o sobreajustamento (do inglês *overfitting*). Resumidamente, *overfitting* é o ato de ajustar um modelo tão bem ajustado aos dados amostrais, que este se torna incapaz de fazer boas previsões para outros dados que não os do modelo. Segundo Matloff [-@matloff2017, 24], um modelo sobreajustado é um modelo tão elaborado que "capta o ruído ao invés do sinal".
 
+Segundo Matloff [-@matloff2017, 24-26], pelo contrário, um modelo com menor número de variáveis explicativas estará enviesando os seus resultados (no sentido de enviesamento sistêmico, inerente à amostragem, não proposital), e o acréscimo de uma variável independente a este modelo estará assim reduzindo o seu viés.
 
-## Regressão Linear
+Por outro lado, de acordo com Matloff [-@matloff2017, 25], quanto maior for o número de variáveis do modelo -- mantido o mesmo número de dados amostrais --, maior será a variabilidade coletiva dos regressores e, assim, maior será a variância dos coeficientes estimados. 
 
-### Definição precisa
+Desta maneira, modelos em modelos mais simples, a redução do viés do mesmo através da adição de um novo regressor compensa o aumento na variabilidade conjunta do modelo, até que este número de regressores atinja um número ótimo, quando a diminuição adicional do viés gerada pela adição de um regressor torna-se tão pequena que não compensa a variabilidade dos coeficientes estimados. Um modelo com variáveis explicativas maior do que este número ótimo estará, portanto, sobreajustado.
+
+Ou seja, existe um *tradeoff* entre viés e variância: para qualquer estimador estatístico [@matloff2017, 25], não se pode reduzir o seu viés sem aumentar a sua variância e vice-versa. Temos que conviver sempre com algum viés e temos que aceitar alguma variância.
+
+Matematicamente, isto decorre do desenvolvimento da expressão do Erro Médio Quadrático (MSE) [@matloff2017, 49]:
+
+$$\mathbb{E}[(\hat{\theta} - \theta)^2] = \mathbb{E}[\hat{\theta} - \mathbb{E}[\hat{\theta}] + \mathbb{E}[\hat{\theta}] - \theta]^2$$
+
+Temos que:
+
+$$\text{MSE} = \mathbb{E}[(\hat{\theta} - \mathbb{E}[\hat{\theta}])^2] + \mathbb{E}[\mathbb{E}[\hat{\theta}] - \theta)^2] + \mathbb{E}[2(\hat{\theta} - \mathbb{E}[\hat{\theta}])(\mathbb{E}[\hat{\theta}] - \theta)]$$
+como:
+
+- o termo $\mathbb{E}[(\hat{\theta} - \mathbb{E}[\hat{\theta}])^2]$ é igual à variância do estimador;
+- o termo  $\mathbb{E}[\mathbb{E}[\hat{\theta}] - \theta)^2]$ é o quadrado do viés do estimador;
+- e, finalmente, o termo $\mathbb{E}[2(\hat{\theta} - \mathbb{E}[\hat{\theta}])(\mathbb{E}[\hat{\theta}] - \theta)]$ é nulo, haja vista que $\mathbb{E}[\hat{\theta} - E(\hat{\theta})] = 0$.
+
+Portanto temos, matematicamente, que: 
+
+$$\text{MSE}(\hat{\theta}) = \text{Var}(\hat{\theta}) + \text{B}^2(\hat{\theta})$$
+
+## A avaliação pela média
+
+### Regressão Linear
+
+#### Definição precisa
 
 Sejam Y e X duas variáveis e $m_{Y;X}(t)$ uma função tal que: 
 
-$$m_{Y;X}(t) = E(Y|X = t)$$
+$$m_{Y;X}(t) = \mathbb{E}(Y|X = t)$$
 
 Chamamos $m_{Y;X}$ de **função de regressão de $Y$ dado $X$** [@matloff2009, 386, grifo do autor]. Em geral, $m_{Y;X}(t)$ é a **média** de $Y$ para todas as unidades da população para as quais $X = t$ [@matloff2009, 386, grifo nosso].
 
-> The word "regression" is an allusion to the famous comment of Sir Francis Galton in the late 1800s regarding "regression toward the mean." This referred to the fact that tall parents tend to have children who are less tall closer to the mean -- with a similar statement for short parents. The predictor variable here might be, say, the father's height F, with the response variable being, say, the son's height S. Galton was saying that $E(S|F) < F$.
+> The word "regression" is an allusion to the famous comment of Sir Francis Galton in the late 1800s regarding "regression toward the mean." This referred to the fact that tall parents tend to have children who are less tall closer to the mean -- with a similar statement for short parents. The predictor variable here might be, say, the father's height F, with the response variable being, say, the son's height S. Galton was saying that $\mathbb{E}(S|F) < F$.
 
 Segundo Matloff [-@matloff2009, 386, grifo do autor], ainda, a função $m_{Y;X}(t)$ é uma função da **população**, ou seja, apenas **estimamos** uma equação de regressão ($\hat{m}_{Y;X}(t)$) à partir de uma amostra da população.
 
@@ -211,24 +286,174 @@ $$m_{Y;X}(t) = \beta_0 + \beta_1t_1 + \beta_2t_2 + \beta_3t_1t_2 + \beta_4t_1^2$
 
 Notando que o termo **regressão linear** não necessariamente significa que o gráfico da função de regressão seja uma linha reta ou um plano, mas que se refere a função de regressão ser linear em relação aos seus parâmetros ($\beta_i$).
 
-## Estimação em modelos de regressão paramétricos
+### Estimação em modelos de regressão paramétricos
 
-Segundo Matloff [-@matloff2009, 389], é possível demonstrar que o mínimo valor da quantidade $E[(Y - g(X))^2]$ [^2] é obtido, entre todas as outras funções, para $g(X) = m_{Y;X}(X)$. Porém, "se pretendemos minimizar o erro médio absoluto de predição, $E(|Y - g(X)|)$ , a melhor função seria a mediana $g(Y) = mediana(Y|X)$." [@matloff2009, 389].
+Segundo Matloff [-@matloff2009, 389], é possível demonstrar que o mínimo valor da quantidade[^1] $\mathbb{E}[(Y - g(X))^2]$  é obtido, entre todas as outras funções, para $g(X) = m_{Y;X}(X)$. Porém, "se pretendemos minimizar o erro médio absoluto de predição, $\mathbb{E}(|Y - g(X)|)$ , a melhor função seria a mediana $g(Y) = mediana(Y|X)$." [@matloff2009, 389].
 
 Matloff [-@matloff2009] aqui está se referindo à um outro tipo de regressão, chamada de regressão quantílica, mais especificamente, à regressão à mediana, ou seja, ao quantil de 50%.
 
-[^2]: Erro médio quadrático de predição
+[^1]: Erro médio quadrático de predição
 
-## Regressão quantílica
+### A equação de regressão linear
 
-Segundo @QR, se a média é a medida que minimiza o erro médio quadrático:
+Como veremos nesta seção, a equação de regressão linear $\mu(t)$ é uma *função da população*, que geralmente não nos está acessível, pois temos acesso apenas a uma parte (amostra) desta população em estudo. O que fazemos, então é *estimar* uma equação de regressão $\hat{\mu}(t)$ para que possamos prever os valores reais da variável em análise.
+
+Tem que se levar em conta que a equação de regressão linear não é uma equação determinística, mas probabilística. No dia-a-dia da prática de engenharia de avaliações, assim como em outras áreas, no entanto, a equação de regressão é usualmente escrita simplificadamente, sem o termo de erro $\epsilon$, ou seja, a equação de regressão é escrita como uma equação determinística, da forma $Y = \alpha + X\beta$ ou, em termos de variáveis de avaliação de imóveis, $VU = \alpha + A\beta$, onde $VU$ representa o valor unitário dos imóveis e $A$ a sua área.
+
+No entanto, estas equações são uma simplificação da equação de regressão. Na verdade, a equação de regressão $\mu(t)$ é uma função da *população* e pode ser escrita formalmente como abaixo [@matloff2017, 66]:
+
+$$\mu(t) = \beta_0 + \beta_1t_1 + ... + \beta_p t_p$$
+
+Como o termo de erro da equação, ou seja, o erro que cometeríamos ao prever $Y$ se nós efetivamente conhecessemos a equação de regressão da população, é [@matloff2017, 67]:
+
+$$\epsilon = Y - \mu(t)$$
+
+Então podemos escrever a equação de regressão de outra maneira, como abaixo [@matloff2017, 67]:
+
+$$Y = \beta_0 + \beta_1t_1 + ... + \beta_p t_p + \epsilon$$
+
+Onde $\epsilon$ é uma variável aleatória supostamente tal que $\mathbb{E}(\epsilon) = 0$ e $\text{Var}(\epsilon) = \sigma^2$, ou simplesmente $\epsilon \sim N(0, \sigma^2)$.
+
+Num modelo onde não há a adoção de qualquer transformação para a variável dependente, verificada a hipótese da normalidade, esta equação de regressão é também a equação de estimação da variável $Y$, ou seja, para uma equação de regressão sem transformação de variáveis, pode-se escrever:
+
+$$\mathbb{E}[Y|X] = \mathbb{E}[\alpha + X\beta] + \mathbb{E}[\epsilon] = \alpha + X\beta$$
+Haja vista que o valor esperado para o termo de erro $\epsilon$ é zero.
+
+No entanto, quando a variável dependente $Y$ é transformada, este termo de erro desprezado na equação de regressão acima é de suma importância para o computo do valor esperado da variável original, como veremos neste artigo, pois ele determina a equação de estimação da variável original. Por exemplo, no caso que aqui nos interessa, que é o da transformação logarítmica da variável dependente, temos:
+
+$$\ln(Y) = \alpha + X\beta + \epsilon \Leftrightarrow$$
+$$Y = \exp(\alpha + X\beta)\exp(\epsilon) \Leftrightarrow$$
+$$\mathbb{E}[Y|X] = \mathbb{E}[\exp(\alpha + X\beta)]\mathbb{E}[\exp(\epsilon)|X] \Leftrightarrow$$
+$$\mathbb{E}[Y|X] = \exp(\alpha + X\beta)\mathbb{E}[\exp(\epsilon)|X]$$
+
+O fundamental a se perceber aqui é que, quando há transformação da variável dependente, para voltarmos à variável original, temos que levar em conta o termo de erro, haja vista que uma propriedade do valor esperado é a de que $\mathbb{E}[f(X)] \ne f(\mathbb{E}[X])$, como veremos a seguir. Mais precisamente, para funções convexas, pela desigualdade de Jensen, $f(\mathbb{E}[X]) \leq \mathbb{E}[(f(x)]$. Isto implica que o valor esperado da exponencial do termo de erro que precisamos estimar é maior do que a exponencial do valor esperado do erro, ou seja, $\mathbb{E}[\exp(\epsilon)|X] \geq \exp(\mathbb{E}[\epsilon|X]) = 1$. 
+
+Consideramos equivocado, portanto, a afirmação abaixo:
+
+> Ao adotar o valor proposto pela equação de regressão linear, o perito, como acima referido, estará informando o Juiz a quem se dirige que o valor pelo qual avaliou o bem é dado por Yc; adicionalmente, há um componente aleatório, de caráter aditivo ou subtrativo, com determinado desvio-padrão, cujo resultado, porém, tanto excederá o valor Yc, como lhe ficará aquém, com a mesma probabilidade de 50%. Decorre isto do princípio dos “eventos comparáveis”; o perito avaliou, na realidade, o logaritmo neperiano de Yc; os resíduos aleatórios são medidos como Ln(Y)-Ln(Yc), onde Ln(Yc) é o valor central de uma distribuição normal e, portanto, sua mediana. **Conseqüentemente, seu homólogo, antilogaritmo, necessariamente, marcará, na distribuição lognormal de Y/Yc, também a mediana. No caso, como o antilogaritmo de 0 é a unidade, a mediana de Y/Yc terá valor 1,0** [@giannakos, 13, grifo nosso]. 
+
+Ou seja, consideramos equivocado a consideração de que os erros aleatórios e com distribuição normal na equação de regressão logaritmizada podem ser diretamente retransformados por um fator de erro multiplicativo igual a 1, já que isto viola a desigualdade de Jensen. 
+
+Desta maneira, no nosso ponto de vista seria errôneo afirmar que, ao utilizar a avaliação pela média, se "introduz, na regressão linear, como fator de decisão, as características da função dita 'originária', não-linear, transformada em logarítmica precisamente para alcançar linearidade; viola os pressupostos do método de mínimos quadrados, fundamento da regressão, ou, alternativamente, equivale a adulterar a amostra original, multiplicando, no caso presente, todos os seus valores..." [-@giannakos, 5].
+
+@giannakos faz uma crítica à avaliação pela moda da distribuição lognormal, crítica esta muito bem elaborada e da qual não discordamos no todo. Porém, o mesmo trabalho faz também uma defesa a nosso ver injustificada da utilização da estimativa pela mediana desta distribuição. Concordamos com @giannakos que a moda não é o valor mais provável, contudo, a nosso ver, pelo motivo que **o valor mais provável é o Valor Esperado** da variável, ou seja, o seu valor médio, como veremos.
+
+Mesmo em @giannakos, encontra-se que "a média aritmética é o 'valor esperado' da variável". 
+
+Na verdade, o que poderia ser afirmado é que, ao avaliar pela média, o avaliador estaria se aproximando melhor da equação de regressão do que ao avaliar pela moda ou pela mediana, haja vista que faz parte da equação de regressão o termo de erro multiplicativo, de valor sabidamente maior do que 1 (pela desigualdade de Jensen), a que se refere Giannakos e Leão [-@giannakos].
+
+### O problema da retransformação das variáveis
+
+Segundo [@shen, 552], modelos lineares lognormais tem muitas aplicações e muitas vezes é de interesse prever a variável resposta ou estimar a média da variável resposta na escala original para um novo conjunto de covariantes.
+
+Segundo Shen e Zhu[-@shen, 552], se $Z = (Z_1,\cdots, Z_n)^T$ é o vetor variável resposta de distribuição lognormal e $x_i = (1, x_{i1}, \cdots, x_{ip})^T$ é o vetor dos covariantes para a observação $i$, um modelo linear lognormal assume a seguinte forma:
+
+$$Y = \ln(Z) = X\beta + \epsilon$$
+
+onde $X = (x_1, \cdots, x_n)^T$, $\beta = (\beta_0, \beta_1, \cdots, \beta_p)^T$, e $\epsilon = (\epsilon_1, \cdots, \epsilon_n)^T$ com $\epsilon_i \sim  N(0, \sigma^2)$ i.i.d.(*identically independently distributed*) [@shen, 552-553].
+
+> Em muitos casos, para um novo conjunto de covariantes $x_0$, pode-se estar interessado em prever a variável resposta em sua escala original:
+>
+> $$Z_0 = e^{x_o^T\beta + \epsilon_0}$$
+>
+> ou estimar a média condicional da variável resposta:
+>
+> $$\mu(x_0)=\mathbb{E}[Z_0|x_o] = e^{x_o^T\beta + \frac{1}{2}\sigma^2}$$
+
+De acordo com Shen e Zhu[-@shen, 553], se $\beta$ e $\sigma^2$ são ambos conhecidos, então é fácil demonstrar que o melhor estimador de $Z_0$ é de fato $\mu(x_0)$. Contudo, na prática, ambos $\beta$ e $\sigma^2$ são desconhecidos e precisam ser estimados para a obtenção de $\mu(x_0)$.
+
+Segundo Shen e Zhu [-@shen, 552], existem na literatura diversos estimadores baseados em diversos métodos inferenciais, como **ML** (*Maximum Likelihood  Estimator*), **REML** (*Restricted ML Estimator*), **UMVU** (*Uniformly Minimum Variance Unbiased Estimator*), além de um estimador **REML** com viés corrigido.
+
+Na prática, estes estimadores pertencem a uma classe de estimadores definida na expressão abaixo:
+
+$$\begin{Bmatrix}
+\hat{\mu_c}(x_0):\hat{\mu_c}(x_0) = \exp(x_0^T\hat{\beta} + cRSS/2), c = \frac{1}{n-a}, a<n
+\end{Bmatrix}$$
+
+Shen e Zhu[-@shen] então propõem dois novos estimadores baseados na minimização do erro médio quadrático assintótico ($MM$) e do viés assintótico ($MB$).
+
+De maneira que a diferença entre os estimadores supra-citados pode ser resumida ao parâmetro $a$:
+
+$a_{ML} = 0$
+
+$a_{REML} = p+1$
+
+$a_{MM} = p - 1 - 3nv_0 - 3RSS/(2m)$
+
+$a_{MB} = p + 1 - nv_0 - RSS/(2m)$
+
+#### Estimadores não-paramétricos
+
+De acordo com Duan [-@Duan, 606], o Valor Esperado $\mathbb{E}$ de uma variável resposta $Y$ que tenha sido transformada em valores $\eta$ durante a regressão linear por uma função $g(Y)$ **não-linear** não é igual ao valor da simples retransformação da variável transforma pela sua função inversa $h(\eta) = g^{-1}(Y)$. Em outros termos [@Duan, 606]:
+
+$$\mathbb{E}[Y_0] = \mathbb{E}[h(x_0\beta + \epsilon)] \ne h(x_o\beta)$$
+
+Reparar que o termo de erro faz parte da composição do valor esperado da variável de regressão. Em uma regressão linear clássica, sem transformação, $\mathbb{E}[\epsilon] = 0$, então $\mathbb{E}[Y_0] = \mathbb{E}[x_0\beta]$.
+
+Numa regressão linear logaritmizada, ou seja, uma regressão linear com o logaritmo da variável dependente ($h(\eta) = g^{-1}(\eta) = \exp(\eta)$), para efetuar apropriadamente a retransformação das estimativas de volta a sua escala original, precisa-se ter em conta a desigualdade mencionada na seção \ref{valor-esperado}.
+
+Segundo [@NBERt0246], quando ajustamos o logaritmo natural de uma variável $Y$ contra outra variável $X$ através da seguinte equação de regressão:
+
+$$ln(Y) = \beta_0 + \beta_1X + \epsilon$$
+
+Se o erro $\epsilon$ é normalmente distribuído, com média zero e desvio padrão $\sigma^2$, ou seja, se $\epsilon \sim N(0, \sigma^2)$, então [@NBERt0246, 6; @Duan, 606]:
+
+$$\mathbb{E}[Y|X] = e^{\beta_0 + \beta_1X} \cdot \mathbb{E}[e^\epsilon] \ne e^{\beta_0 + \beta_1X}$$
+
+Embora o valor esperado dos resíduos $\epsilon$ seja igual a zero, ele está submetido a uma transformação não linear, de maneira que não podemos afirmar que $\mathbb{E}[e^\epsilon] = 1$ (como vimos na seção \ref{desigualdade-de-jensen}, $\mathbb{E}[\exp(x)] > \exp[\mathbb{E}(x)]$). Desta maneira, o estimador abaixo, chamado em [@shen, 554] de *naive back-transform estimator*, ou simplesmente **BT** não é consistente e é enviesado, tendo viés multiplicativo de valor assintótico igual a $e^{-\sigma^2/2}$:
+
+$$\mathbb{E}[Y|X] = e^{\beta_0 + \beta_1X}$$
+
+Segundo [@shen, 554], ainda, o valor de $e^{-\sigma^2/2}$ é sempre menor do que 1[@shen, 554].
+
+> As a result, the BT estimator underestimates $\mu(x_0)$, and the bias is large when $\sigma^2$ is large. In our study, it appears that the BT estimator performs much worse than the other estimators[...]Actually, the BT estimator is more suitable for estimating the median of Z0, which is $\exp(x_0^T\beta)$ in this case.
+
+Porém se o termo de erro $\epsilon$ é normalmente distribuído $N(0,\sigma^2)$, então um estimador não-enviesado para o valor esperado $\mathbb{E}[Y]$, de acordo com @Duan, assume a forma vista na equação abaixo[@Duan, 606; @NBERt0246, 2 e 6]:
+
+$$\mathbb{E}[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}$$
+
+Cabe salientar, segundo [@NBERt0246, 6], que se o termo de erro não for i.i.d (independente e identicamente distribuído), mas for homoscedástico, então:
+
+$$\mathbb{E}[Y|X]=s \times e^{X_0\beta}$$
+onde $s = \mathbb{E}[e^\epsilon]$.
+
+De qualquer maneira, o valor esperado de $Y$ é proporcional à exponencial da previsão na escala log.
+
+@Duan apresenta então um estimador não-paramétrico (*smearing estimate*), independente da função de transformação $h(\eta)$ e da distribuição dos erros $F(\epsilon)$, tal que:
+
+$$\hat{\mathbb{E}}[Y_0] = \int h(x_0\hat{\beta} + \epsilon)d\hat{F}_n(\epsilon) = \frac{1}{n}\sum_{i = 1}^{n}h(x_0\hat{\beta}+\hat{\epsilon_i})$$
+
+#### Modelos Heteroscedásticos
+
+Modelos heteroscedásticos não são raros, especialmente no caso de variáveis envolvendo valores em moeda, sendo muito comum em modelos econométricos. Em sua essência, são heteroscedásticos aqueles modelos lineares cujo termo de erro não pode ser considerado totalmente independente, ou seja, existe alguma função (linear ou não), tal que $\mathbb{E}[e^\epsilon] = f(x)$, de modo que:
+
+$$\ln(\mathbb{E}[Y|X]) = X\beta + \ln(f(x))$$
+
+É desnecessário dizer que, para estes modelos o estimador para a média é diferente de $\mathbb{E}[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}$, haja vista que $\sigma^2$ não é mais um escalar, mas uma função.
+
+Existem diversas maneiras de se contornar este problema. Por exemplo, através da eliminação do viés através da utilização de uma função que modele a variância $\sigma^2(X)$, ou através do estimador sanduíche[^3].
+
+[^3]: ver [link](https://matloff.wordpress.com/2015/09/18/can-you-say-heteroscedasticity-3-times-fast/)
+
+Cabe ainda salientar que, para os modelos heteroscedásticos, não apenas os erros estão comprometidos, mas também os intervalos de confiança.
+
+## A avaliação pela mediana
+
+A avaliação pela mediana através de modelos de regressão linear clássicos, como prentendemos demonstrar neste artigo, não é uma boa opção. Muito melhor, para este caso, seria fazer uso de um método consagrado e automatizado praticamente da mesma maneira que a regressão linear clássica à média: a regressão à mediana, ou, regressão quantílica à mediana.
+
+### Regressão quantílica
+
+Segundo @QR, enquanto a média é a medida que minimiza o erro médio quadrático:
 
 $$\mu = \underset{c}{argmin} E(Y - c)^2$$
+
 A mediana é o valor que minimiza o erro médio absoluto:
 
 $$Me = \underset{c}{argmin} E|Y-c|$$
 
-### Exemplo com duas variáveis
+Por estas simples equações, percebe-se que a média tem a propriedade de ser mais suscetível à presença de *outliers*, haja vista que os erros maiores serão mais impactantes no modelo do que os erros menores, por estarmos minimizando erro médio quadrático. Já na regressão à mediana, minimiza-se o erro médio absoluto, de maneira que a presença de um eventual *outlier* tem pouco impacto sobre a equação de regressão (à mediana).
+
+#### Exemplo com duas variáveis
 
 O gráfico da figura \ref{fig:engel} foi reproduzido de Koenker e Hallock [-@koenker, 147]. Pode-se perceber que a reta de regressão linear é bastante afetada pela presença dos dois pontos com maior renda, o que faz com que a equação de regressão linear superestime os valores para os extratos de mais baixa renda, enquanto a reta de regressão à mediana apresenta maior equilíbrio, não sendo tão afetada pela presença destes pontos.
 
@@ -254,9 +479,9 @@ for(i in 1:length(taus)){
 Na figura \ref{fig:engel} as retas cinzas são as regressões para os quantis de 5%, 10%, 25%, 75%, 90% e 95%.
 
 Também é possível a transformação de variáveis nos modelos de regressão quantílica, assim como fazemos nos modelos de regressão à média.
-O modelo de regressão linear para a média apresentado é heteroscedástico, como o próprio gráfico da figura \ref{fig:engel} demonstra. Nestes casos, é usual proceder com a transformação dos dados. Desta maneira, foi elaborada a figura \ref{fig:engellog}, reproduzida da vinheta [-@quantregvignette, 11] do pacote \pkg{quantreg} [-@quantreg] do software estatístico \proglang{R} [-@R], que nos mostra o modelo das variáveis em escala *log*.
+O modelo de regressão linear para a média apresentado é heteroscedástico, como o próprio gráfico da figura \ref{fig:engel} demonstra. Nestes casos, é usual proceder com a transformação dos dados. Desta maneira, foi elaborada a figura \ref{fig:engellog}, reproduzida da vinheta [-@quantregvignette, 11] do pacote \pkg{quantreg} [-@quantreg] do software estatístico \proglang{R} [-@R], que nos mostra o modelo das variáveis em escala $\ln$.
 
-```{r engellog, fig.cap = "Comparação de modelos de regressão para média (em vermelho) e para a mediana (em azul) em escala transformada (log)."}
+```{r engellog, fig.cap = "Comparação de modelos de regressão para média (em vermelho) e para a mediana (em azul) em escala transformada (ln)."}
 plot(foodexp ~ income, data = engel, log = "xy", 
      xlab = "Household Income", 
      ylab = "Food Expenditure",
@@ -268,102 +493,35 @@ for( i in 1:length(taus)){
   }
 ```
 
-Como esperado, a heteroscedasticidade do modelo desapareceu com a transformação dos dados. 
+Como esperado, a heteroscedasticidade do modelo praticamente desapareceu com a transformação dos dados. 
 
-## O problema da retransformação das variáveis
+## A avaliação pela moda
 
-Segundo [@shen, 552], modelos lineares lognormais tem muitas aplicações e muitas vezes é de interesse prever a variável resposta ou estimar a média da variável resposta na escala original para um novo conjunto de covariantes.
+Os defensores da avaliação pela moda da variável lognormal normalmente argumentam que a escolha desta é pelo motivo da moda ser o valor mais provável da variável lognormal. Ledo engano, poisinstal o valor mais provável é o valor esperado da mesma.
 
-Segundo Shen e Zhu[-@shen, 552], se $Z = (Z_1,\cdots, Z_n)^T$ é o vetor variável resposta de distribuição lognormal e $x_i = (1, x_{i1}, \cdots, x_{ip})^T$ é o vetor dos covariantes para a observação $i$, um modelo linear log-normal assume a seguinte forma:
+### Regressão à moda
 
-$$Y = log(Z) = X\beta + \epsilon$$
+Segundo Chen *et al.* [-@chen2016, 1], ao contrário da regressão convencional que busca estimar a média condicional de $Y$ dado $X = x$, a regressão à moda busca estimar a moda condicional de $Y$ dado $X=x$.
 
-onde $X = (x_1, \cdots, x_n)^T$, $\beta = (\beta_0, \beta_1, \cdots, \beta_p)^T$, e $\epsilon = (\epsilon_1, \cdots, \epsilon_n)^T$ com $\epsilon_i \sim  N(0, \sigma^2)$ i.i.d.(*identically independently distributed*) [@shen, 552-553].
+Segundo Chen *et al.*, a regressão à moda é utilizada para buscar estruturas da distribuição de probabilidade dos dados que são perdidas quando se utiliza a clássica regressão à média.
 
-> Em muitos casos, para um novo conjunto de covariantes $x_0$, pode-se estar interessado em prever a variável resposta em sua escala original:
->
-> $$Z_0 = e^{x_o^T\beta + \epsilon_0}$$
->
-> ou estimar a média condicional da variável resposta:
->
-> $$\mu(x_0)=E[Z_0|x_o] = e^{x_o^T\beta + \frac{1}{2}\sigma^2}$$
+A regressão modal clássica, segundo Chen *et al.* [-@chen2016, 4] pode ser resumida por um modelo de uma moda condicional tal que:
 
-De acordo com Shen e Zhu[-@shen, 553], se $\beta$ e $\sigma^2$ são ambos conhecidos, então é fácil demonstrar que o melhor estimador de $Z_0$ é de fato $\mu(x_0)$. Contudo, na prática, ambos $\beta$ e $\sigma^2$ são desconhecidos e precisam ser estimados para a obtenção de $\mu(x_0)$.
+$$\text{Mode}(Y|X=x) = \beta_0 + \beta^Tx$$
+onde $Mode(Y|X=x)$ é a moda **global** de $Y$ dado $X = x$.
 
-Segundo Shen e Zhu [-@shen, 552], existem na literatura diversos estimadores baseados em diversos métodos inferenciais, como **ML** (*Maximum Likelihood  Estimator*), **REML** (*Restricted ML Estimator*), **UMVU** (*Uniformly Minimum Variance Unbiased Estimator*), além de um estimador **REML** com viés corrigido.
+Já o procedimento não-paramétrico proposto em Chen *et al.* [-@chen2016, 4], fora do escopo deste artigo, permite múltiplas modas (locais) da variável resposta.
 
-Na prática, estes estimadores pertencem a uma classe de estimadores definida na expressão abaixo:
+Segundo Oelker *et al.*[-@oelker, 2]:
 
-$$\begin{Bmatrix}
-\hat{\mu_c}(x_0):\hat{\mu_c}(x_0) = exp(x_0^T\hat{\beta} + cRSS/2), c = \frac{1}{n-a}, a<n
-\end{Bmatrix}$$
+- a moda é de longe a característica mais proeminente de uma função densidade de probabilidade;
+- a moda é extremamente robusta à *outliers*;
+- the mode provides a location measure that is easily communicated to practitioners such that mode regression will be of high interest in applied regression situations, there may be situations where the dependence of the mode on covariates may be quite different from the dependence of the median and/or the mean,
+- a regressão à moda permite lidar com variáveis dependentes truncadas.
 
-Shen e Zhu[-@shen] então propõem dois novos estimadores baseados na minimização do erro médio quadrático assintótico ($MM$) e do viés assintótico ($MB$).
+Em relação à moda como estimativa de medida central, consideramos que esta se trata mais de uma curiosidade do que uma estimativa de fato: o que significa a moda de uma população de apartamentos em uma determinada cidade? A moda encontraria-se, provavelmente, nos valores dos apartamentos de 2 e 3 quartos, com uma ou duas vagas de garagem. Mas qual a utilidade disto quando o que se pretende avaliar, por exemplo, é o valor de um apartamento de 4 ou 5 quartos e 4 ou 5 vagas de garagem, ou ainda de se avaliar um apartamento com um quarto e sem vaga de garagem? Assim como os apartamento citados estão "fora de moda", também estarão os seu valores. Contudo, estes estarão em consonância com a média ou com a mediana do mercado, dados as suas características, a depender da configuração deste.
 
-De maneira que a diferença entre os estimadores supra-citados pode ser resumida ao parâmetro $a$:
-
-$a_{ML} = 0$
-
-$a_{REML} = p+1$
-
-$a_{MM} = p - 1 - 3nv_0 - 3RSS/(2m)$
-
-$a_{MB} = p + 1 - nv_0 - RSS/(2m)$
-
-### Estimadores não-paramétricos
-
-De acordo com Duan [-@Duan, 606], o Valor Esperado $E$ de uma variável resposta $Y$ que tenha sido transformada em valores $\eta$ durante a regressão linear por uma função $g(Y)$ **não-linear** não é igual ao valor da simples retransformação da variável transforma pela sua função inversa $h(\eta) = g^{-1}(Y)$. Em outros termos [@Duan, 606]:
-
-$$E[Y_0] = E[h(x_0\beta + \epsilon)] \ne h(x_o\beta)$$
-
-Reparar que o termo de erro faz parte da composição do valor esperado da variável de regressão. Em uma regressão linear clássica, sem transformação, $E[\epsilon] = 0$, então $E[Y_0] = E[x_0\beta]$.
-
-Numa regressão log-linear, ou seja, uma regressão linear com o logaritmo da variável dependente ($h(\eta) = g^{-1}(\eta) = exp(\eta)$), para efetuar apropriadamente a retransformação das estimativas de volta a sua escala original, precisa-se ter em conta a desigualdade mencionada na seção \ref{esperanca-matematica-ou-valor-esperado}.
-
-Segundo [@NBERt0246], quando ajustamos o logaritmo natural de uma variável $Y$ contra outra variável $X$ através da seguinte equação de regressão:
-
-$$ln(Y) = \beta_0 + \beta_1X + \epsilon$$
-
-Se o erro $\epsilon$ é normalmente distribuído, com média zero e desvio padrão $\sigma^2$, ou seja, se $\epsilon \sim N(0, \sigma^2)$, então [@NBERt0246, 6; @Duan, 606]:
-
-$$E[Y|X] = e^{\beta_0 + \beta_1X} \cdot E[e^\epsilon] \ne e^{\beta_0 + \beta_1X}$$
-
-Embora o valor esperado dos resíduos $\epsilon$ seja igual a zero, ele está submetido a uma transformação não linear, de maneira que não podemos afirmar que $E[e^\epsilon] = 1$ (como vimos na seção \ref{desigualdade-de-jensen}, $E[exp(x)] > exp[E(x)]$). Desta maneira, o estimador abaixo, chamado em [@shen, 554] de *naive back-transform estimator*, ou simplesmente **BT** não é consistente e é enviesado, tendo viés multiplicativo de valor assintótico igual a $e^{-\sigma^2/2}$:
-
-$$E[Y|X] = e^{\beta_0 + \beta_1X}$$
-
-Segundo [@shen, 554], ainda, o valor de $e^{-\sigma^2/2}$ é sempre menor do que 1[@shen, 554].
-
-> As a result, the BT estimator underestimates $\mu(x_0)$, and the bias is large when $\sigma^2$ is large. In our study, it appears that the BT estimator performs much worse than the other estimators[...]Actually, the BT estimator is more suitable for estimating the median of Z0, which is $exp(x_0^T\beta)$ in this case.
-
-Porém se o termo de erro $\epsilon$ é normalmente distribuído $N(0,\sigma^2)$, então um estimador não-enviesado para o valor esperado $E[Y]$, de acordo com @Duan, assume a forma vista na equação abaixo[@Duan, 606; @NBERt0246, 2 e 6]:
-
-$$E[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}$$
-
-Cabe salientar, segundo [@NBERt0246, 6], que se o termo de erro não for i.i.d (independente e identicamente distribuído), mas for homoscedástico, então:
-
-$$E[Y|X]=s \times e^{X_0\beta}$$
-onde $s = E[e^\epsilon]$.
-
-De qualquer maneira, o valor esperado de $Y$ é proporcional à exponencial da previsão na escala log.
-
-@Duan apresenta então um estimador não-paramétrico (*smearing estimate*), independente da função de transformação $h(\eta)$ e da distribuição dos erros $F(\epsilon)$, tal que:
-
-$$\hat{E}[Y_0] = \int h(x_0\hat{\beta} + \epsilon)d\hat{F}_n(\epsilon) = \frac{1}{n}\sum_{i = 1}^{n}h(x_0\hat{\beta}+\hat{\epsilon_i})$$
-
-### Modelos Heteroscedásticos
-
-Modelos heteroscedásticos não são raros, especialmente no caso de variáveis envolvendo valores em moeda, sendo muito comum em modelos econométricos. Em sua essência, são heteroscedásticos aqueles modelos lineares cujo termo de erro não pode ser considerado totalmente independente, ou seja, existe alguma função (linear ou não), tal que $E[e^\epsilon] = f(x)$, de modo que:
-
-$$log(E[Y|X]) = X\beta + log(f(x))$$
-
-É desnecessário dizer que, para estes modelos o estimador para a média é diferente de $E[Y] = e^{\beta_0 + \beta_1X} \cdot e^{\frac{1}{2}\sigma^2}$, haja vista que $\sigma^2$ não é mais um escalar, mas uma função.
-
-Existem diversas maneiras de se contornar este problema. Por exemplo, através da eliminação do viés através da utilização de uma função que modele a variância $\sigma^2(X)$, ou através do estimador sanduíche[^3].
-
-[^3]: ver [link](https://matloff.wordpress.com/2015/09/18/can-you-say-heteroscedasticity-3-times-fast/)
-
-Cabe ainda salientar que, para os modelos heteroscedásticos, não apenas os erros estão comprometidos, mas também os intervalos de confiança.
+Em outras palavras, um modelo de regressão linear é uma média *condicional* da variável resposta (ver [Regressão Linear]). Ou seja, pretende-se saber o valor médio de um imóvel *dado que* ele possui as seguintes características...E estas características podem estar *na moda* ou fora dela.
 
 ## Validação Cruzada 
 
@@ -375,11 +533,11 @@ Para cada observação então calcula-se o seu erro quadrático ($(Y_i - \hat{Y}
 
 $$RMSPE = (\frac{1}{n}\sum_{i = 1}^{n}(Y_i - \hat{Y}_i)^2)^{1/2}$$
 
-# ESTUDO DE CASO
+## Estudo de Caso
 
 Com o fim de averiguar qual estimador melhor se adequa ao procedimento de retransformação de variáveis, aplicar-se-á um comparativo entre os estimadores média, moda e mediana, através do uso da estatística RMSPE.
 
-## Dados
+### Dados
 
 Neste estudo comparamos a precisão de diversos tipos de modelos estatísticos (regressão linear, regressão não-linear e modelo linear generalizado) sobre os dados disponíveis em Hochheim [-@hochheim, 21-22].
 
@@ -391,9 +549,9 @@ outliers <- c(31, 39)
 
 Os coeficientes do modelo utilizado em @hochheim, assim como suas estatísticas básicas podem ser visualizados na tabela \ref{tab:fit}.
 
-## Cálculo do RMSPE
+### Cálculo do RMSPE
 
-### Regressão linear ordinária
+#### Regressão linear ordinária
 
 Para o cálculo do RMSPE foi utilizado como referência o modelo proposto por Hochheim [-@hochheim, 29], ou seja, foram utilizadas as mesmas transformações de variáveis utilizadas no modelo proposto. Os valores dos $\beta_i$ são calculados a cada passo.
 
@@ -440,19 +598,19 @@ Os valores encontrados para o erro de predição médio quadrático para cada es
 
 Como esperado, o RMSPE foi menor para a média, e maior para a moda. O que comprova a teoria, já que o *naive estimator* é enviesado com viés conhecido de $-\sigma^2/2$, logo a moda possui viés de $-1,5\sigma^2$.
 
-Os valores ajustados com os estimadores da moda, média e mediana podem ser vistos na tabela \ref{tab:tabela}:
+Os valores ajustados com os estimadores da moda, média e mediana podem ser vistos na tabela em anexo [^2].
 
-## Cálculo do erro médio absoluto
+### Cálculo do erro médio absoluto
 
 Assim como a regressão linear é uma minimização do erro médio quadrático, a regressão à mediana leva a minimização do erro médio absoluto.
 
 Para verificarmos isto, com um modelo de regressão à mediana, calcularemos o RMAPE (*root mean absolute prediction error*) e o RMSPE (*root mean squared prediction error*) para as estimativas obtidas com este modelo.
 
-### Regressão quantílica à mediana
+#### Regressão quantílica à mediana
 
 O modelo de regressão quantílica com quantil $\tau = 0.5$, ou seja, o modelo de regressão à mediana, para os mesmos dados supra-mencionados está resumido na tabela \ref{tab:fit}.
 
-```{r, results='asis'}
+```{r}
 fit <- lm(log(valor) ~ area_total + quartos + suites + garagens + log(dist_b_mar) + I(padrao^-1), 
           data = dados, subset = -outliers)
 fit$AIC <- AIC(fit)
@@ -461,14 +619,18 @@ fit1 <- rq(log(valor) ~ area_total + quartos + suites + garagens + log(dist_b_ma
            data = dados)
 fit1$r.squared <- miscTools::rSquared(log(dados$valor), fit1$residuals)
 fit1$AIC <- AIC(fit1)
+```
+
+```{r, results='asis'}
 stargazer(fit, fit1, 
           header = FALSE, 
           type = type,
           label = "tab:fit",
           title = "Comparação entre os coeficientes de regressão linear e regressão quantílica",
-          ci = TRUE,
+          ci = TRUE, single.row = TRUE,
           report = "vcstp*")
 ```
+
 
 
 ```{r}
@@ -488,36 +650,25 @@ RMAPE <- mean(sae)
 RMSPE <- sqrt(mean(spe))
 ```
 
-De posse do modelo para a regressão quantílica, fazemos a previsão para a mediana da variável `valor` na escala original da mesma maneira que a fizemos para a regressão linear, ou seja, apenas aplicamos a função inversa à variável transformada ($valor = exp(log(\hat{Y}))$). Os valores podem ser vistos na tabela \ref{tab:tabela}.
+De posse do modelo para a regressão quantílica, fazemos a previsão para a mediana da variável `valor` na escala original da mesma maneira que a fizemos para a regressão linear, ou seja, apenas aplicamos a função inversa à variável transformada ($valor = \exp(log(\hat{Y}))$). Os valores podem ser vistos na tabela em anexo [^2].
 
-```{r tabela}
-tabela <- data.frame(Y = dados$valor, Média = p1, Mediana = p, Moda = p2, `Mediana^1` = p3)
-rownames(tabela) <- paste("AP_", 1:50, sep = "")
-kable(tabela,
-      format = ifelse(type == "html", "markdown", type),
-      caption = "Valores ajustados para os dados pelos estimadores",
-      digits = 0, format.args = list(big.mark = "."), 
-      booktabs = TRUE,
-      row.names = TRUE) %>%
-  kable_styling(latex_options = "striped", 
-                            bootstrap_options = "striped") %>% 
-  add_header_above(c(" " = 1, "Dados" = 1, "Regressão Linear" = 3, "Regressão Quantílica" = 1)) %>%
-  footnote(number = "Estimada pela regressão à mediana.")
-```
+[^2]: https://github.com/lfpdroubi/moda-media-mediana/blob/master/tabela.xls
 
 O valor de RMAPE para a regressão à mediana é de R\$`r brformat(RMAPE)`, enquanto o valor do RMSPE é de R\$`r brformat(RMSPE)`.
 
-É fácil demonstrar que estes valores são bem diferentes dois obtidos pelas estimativas da regressão linear clássica (regressão à média). Para a estimativa pela mediana na regressão linear, o erro médio absoluto seria de R\$ 133.234,00, bem superior ao erro médio absoluto obtido pela regressão à mediana.
+É fácil demonstrar que estes valores são bem diferentes dos obtidos pelas estimativas da regressão linear clássica (regressão à média). Para a estimativa pela mediana na regressão linear, o erro médio absoluto seria de R\$ 133.234,00, bem superior ao erro médio absoluto obtido pela regressão à mediana.
 
 Já para o RMSPE, o valor obtido na regressão linear é menor, qualquer que seja a estimativa, pela moda, média ou mediana.
 
 Ou seja, o modelo de regressão linear minimizou o RMSPE e o modelo de regressão quantílica minimizou o RMAPE, conforme esperado.
 
-# CONCLUSÃO
+# CONCLUSÕES E RECOMENDAÇÕES
 
-Como vimos na seção \ref{revisao-bibliografica}, o método clássico de regressão linear é uma minimização do erro médio quadrático de predição e a função de regressão $\hat{m}_{Y;X}$ é uma equação para a *média* da população $Y$ dado $X$, seja ela uma função de outra variável ou não. Considerando que são satisfeitas as hipóteses da regressão linear clássica, o melhor estimador para o valor será o da avaliação pela média, haja vista que, por definição, a regressão linear é uma função para a média. 
+Entendemos que a norma brasileira [@NBR1465302] deveria tratar este assunto de maneira clara, especificando qual estimador deveria ser utilizado para a formação de valores, ou ainda, qual seria o estimador dependendo do método utilizado pelo avaliador, se a regressão linear clássica (*i.e.*, à média), a regressão à mediana ou a regressão modal, haja visto que os três métodos são cientificamente válidos.
 
-Ora, claro está, de acordo com todos os trabalhos citados, inclusive @giannakos, que o valor esperado da variável é a média. A regressão linear com o método dos mínimos quadrados é uma regressão para a média. Isto posto, como então avaliar o valor da variável original? Porque na área de avaliações não temos interesse na previsão da variável $W = log(Y)$, mas sim na variável $Y$, ou seja, estamos interessados nos valores da variável original, não nos valores da variável transformada. Está claro que deve-se proceder a retransformação da variável $W$ na  variável original, mas para isso é preciso utilizar o método correto.
+Como vimos na seção \ref{regressao-linear}, o método clássico de regressão linear é uma minimização do erro médio quadrático de predição e a função de regressão $\hat{m}_{Y;X}$ é uma equação para a *média* da população $Y$ dado $X$, seja ela uma função de outra variável ou não. Considerando que são satisfeitas as hipóteses da regressão linear clássica, o melhor estimador para o valor será o da avaliação pela média, haja vista que, por definição, a regressão linear é uma função para a média. 
+
+Ora, claro está, de acordo com todos os trabalhos citados, inclusive @giannakos, que o valor esperado da variável é a média. A regressão linear com o método dos mínimos quadrados é uma regressão para a média. Isto posto, como então avaliar o valor da variável original? Porque na área de avaliações não temos interesse na previsão da variável $W = \ln(Y)$, mas sim na variável $Y$, ou seja, estamos interessados nos valores da variável original, não nos valores da variável transformada. Está claro que deve-se proceder a retransformação da variável $W$ na  variável original, mas para isso é preciso utilizar o estimador correto.
 
 Esperamos ter demonstrado com este artigo que a retransformação adequada da variável de regressão linear é a estimativa pela média, que é o seu Valor Esperado, que pode ser calculado através de qualquer dos estimadores supra-citados, sem com isso adulterar a equação de regressão, muito pelo contrário, reafirmando-a.
 
@@ -525,8 +676,23 @@ Não pretendemos, com isto, impor quer seja a média ou a mediana a melhor estim
 
 No entanto, se pretende-se efetuar uma avaliação pela mediana, entendemos que a melhor opção seria a utilização da regressão quantílica, para o quantil de 50% (obviamente), e não a utilização da retransformação inadequada da equação de regressão linear, que destina-se a estimar a média.
 
-Em relação à moda como estimativa de medida central, consideramos que esta se trata mais de uma curiosidade do que uma estimativa de fato: o que significa a moda de uma população de apartamentos em uma determinada cidade? A moda encontraria-se, provavelmente, nos valores dos apartamentos de 2 e 3 quartos, com uma ou duas vagas de garagem. Mas qual a utilidade disto quando o que se pretende avaliar, por exemplo, é o valor de um apartamento de 4 ou 5 quartos e 4 ou 5 vagas de garagem, ou ainda de se avaliar um apartamento com um quarto e sem vaga de garagem? Assim como os apartamento citados estão "fora de moda", também estarão os seu valores. Contudo, estes estarão em consonância com a média ou com a mediana do mercado, dados as suas características, a depender da configuração deste.
 
-Em outras palavras, um modelo de regressão linear é uma média *condicional* da variável resposta (ver [Regressão Linear]). Ou seja, pretende-se saber o valor médio de um imóvel *dado que* ele possui as seguintes características...E estas características podem estar *na moda* ou fora dela.
+<!-- # ANEXO {-} -->
+
+<!-- ```{r tabela} -->
+<!-- tabela <- data.frame(Y = dados$valor, Média = p1, Mediana = p, Moda = p2, `Mediana^1` = p3) -->
+<!-- rownames(tabela) <- paste("AP_", 1:50, sep = "") -->
+<!-- kable(tabela, -->
+<!--       format = ifelse(type == "html", "markdown", type), -->
+<!--       caption = "Valores ajustados para os dados pelos estimadores", -->
+<!--       digits = 0, format.args = list(big.mark = "."),  -->
+<!--       booktabs = TRUE, longtable = TRUE, -->
+<!--       row.names = TRUE) %>% -->
+<!--   kable_styling(latex_options = "striped",  -->
+<!--                             bootstrap_options = "striped") %>%  -->
+<!--   add_header_above(c(" " = 1, "Dados" = 1, "Regressão Linear" = 3, "Regressão Quantílica" = 1)) %>% -->
+<!--   footnote(number = "Estimada pela regressão à mediana.") -->
+<!-- ``` -->
+
 
 # REFERÊNCIAS {-}

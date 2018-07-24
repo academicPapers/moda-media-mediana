@@ -3,6 +3,19 @@
 \usepackage{float}
 \usepackage{subfig}
 \usepackage{caption}
+\usepackage{lastpage}
+\setlength{\parindent}{1.25cm} % Default is 15pt.
+\usepackage{indentfirst}
+\usepackage{fontspec} % para Arial
+\setmainfont{Arial}
 \newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
 \let\proglang=\textsf
 \let\code=\texttt
+\usepackage{fancyhdr}
+% Turn on the style
+\pagestyle{fancy}
+% Clear the header and footer
+\fancyhead{}
+\fancyfoot{}
+% Set the right side of the footer to be the page number
+\fancyfoot[R]{\thepage~/~\pageref{LastPage}}
